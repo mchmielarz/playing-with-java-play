@@ -1,4 +1,4 @@
-package pl.devthoughts.domain;
+package pl.devthoughts.todos.domain;
 
 public enum TodoItemStatus {
 

@@ -1,4 +1,4 @@
-package pl.devthoughts.controllers;
+package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

@@ -1,11 +1,11 @@
-package pl.devthoughts.controllers;
+package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
 import javaslang.control.Option;
-import pl.devthoughts.domain.TodoItem;
-import pl.devthoughts.domain.TodoItemId;
-import pl.devthoughts.domain.TodoItems;
+import pl.devthoughts.todos.domain.TodoItem;
+import pl.devthoughts.todos.domain.TodoItemId;
+import pl.devthoughts.todos.domain.TodoItems;
 import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
