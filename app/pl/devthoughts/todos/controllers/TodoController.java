@@ -36,14 +36,14 @@ public class TodoController extends Controller {
     public Result addItem() {
         TodoItemRequest req = getRequest();
         TodoItemId itemId = saveItem(TodoItem.fromRequest(req));
-        LOGGER.info("Item " + req.getName() + " has been created with id " + itemId.getId());
+        LOGGER.info("Item {} has been created with id {}", req.getName(), itemId.getId());
         return created(toJson(itemId));
     }
 
     public Result getItem(String id) {
         return doCall
             (id, (TodoItem it) -> {
-                LOGGER.info("Returning item " + id);
+                LOGGER.info("Returning item {}", id);
                 return ok(toJson(it));
             });
     }
@@ -54,7 +54,7 @@ public class TodoController extends Controller {
         return doCall
             (id, (TodoItem it) -> {
                     updateItem(it, req);
-                    LOGGER.info("Item " + id + " has been updated");
+                    LOGGER.info("Item {} has been updated", id);
                     return ok();
                 }
             );
@@ -64,7 +64,7 @@ public class TodoController extends Controller {
         return doCall
             (id, (TodoItem it) -> {
                     removeItem(it);
-                    LOGGER.info("Item " + id + " has been removed");
+                    LOGGER.info("Item {} has been removed", id);
                     return ok();
                 }
             );
@@ -74,7 +74,7 @@ public class TodoController extends Controller {
         return doCall
             (id, (TodoItem it) -> {
                     it.done();
-                    LOGGER.info("Item " + id + " changed status to done");
+                    LOGGER.info("Item {} changed status to done", id);
                     return ok();
                 }
             );
@@ -84,7 +84,7 @@ public class TodoController extends Controller {
         return doCall
             (id, (TodoItem it) -> {
                     it.open();
-                    LOGGER.info("Item " + id + " changed status to open");
+                    LOGGER.info("Item {} changed status to open", id);
                     return ok();
                 }
             );
@@ -100,7 +100,7 @@ public class TodoController extends Controller {
         return Match(item).of(
             Case(Some($()), operation),
             Case(None(), () -> {
-                LOGGER.warn("Cannot find an item with id " + id);
+                LOGGER.warn("Cannot find an item with id {}", id);
                 return notFound();
             })
         );
