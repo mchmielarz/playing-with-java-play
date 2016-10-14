@@ -2,11 +2,11 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET           /todos                 pl.devthoughts.controllers.TodoController.getAllItems
+GET           /todos                 pl.devthoughts.todos.controllers.TodoController.getAllItems
 
-POST          /todos                 pl.devthoughts.controllers.TodoController.addItem()
-GET           /todos/:id             pl.devthoughts.controllers.TodoController.getItem(id: String)
-PUT           /todos/:id             pl.devthoughts.controllers.TodoController.updateItem(id: String)
-DELETE        /todos/:id             pl.devthoughts.controllers.TodoController.deleteItem(id: String)
-POST          /todos/:id/done        pl.devthoughts.controllers.TodoController.done(id: String)
-POST          /todos/:id/open        pl.devthoughts.controllers.TodoController.open(id: String)
+POST          /todos                 pl.devthoughts.todos.controllers.TodoController.addItem()
+GET           /todos/:id             pl.devthoughts.todos.controllers.TodoController.getItem(id: String)
+PUT           /todos/:id             pl.devthoughts.todos.controllers.TodoController.updateItem(id: String)
+DELETE        /todos/:id             pl.devthoughts.todos.controllers.TodoController.deleteItem(id: String)
+POST          /todos/:id/done        pl.devthoughts.todos.controllers.TodoController.done(id: String)
+POST          /todos/:id/open        pl.devthoughts.todos.controllers.TodoController.open(id: String)
