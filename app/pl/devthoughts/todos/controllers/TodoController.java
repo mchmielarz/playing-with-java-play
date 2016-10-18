@@ -73,8 +73,8 @@ public class TodoController extends Controller {
     public Result done(String id) {
         return doCall
             (id, (TodoItem it) -> {
-                    it.done();
-                    LOGGER.info("Item {} changed status to done", id);
+                finishItem(it);
+                LOGGER.info("Item {} changed status to done", id);
                     return ok();
                 }
             );
@@ -131,6 +131,10 @@ public class TodoController extends Controller {
 
     private TodoItems findAllItems() {
         return new TodoItems(this.repository.values());
+    }
+
+    private void finishItem(TodoItem it) {
+        it.done();
     }
 
 }
