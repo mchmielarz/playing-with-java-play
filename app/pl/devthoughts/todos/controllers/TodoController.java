@@ -83,11 +83,15 @@ public class TodoController extends Controller {
     public Result reopen(String id) {
         return doCall
             (id, (TodoItem it) -> {
-                    it.open();
-                    LOGGER.info("Item {} changed status to open", id);
+                reopenItem(it);
+                LOGGER.info("Item {} changed status to open", id);
                     return ok();
                 }
             );
+    }
+
+    private void reopenItem(TodoItem it) {
+        it.open();
     }
 
     public Result getAllItems() {
