@@ -30,7 +30,7 @@ public class TodoItem {
         this.status = TodoItemStatus.OPEN;
     }
 
-    private TodoItem(String id, String name, Date dueDate, TodoItemStatus status) {
+    public TodoItem(String id, String name, Date dueDate, TodoItemStatus status) {
         this.id = id;
         this.name = name;
         this.dueDate = dueDate;
