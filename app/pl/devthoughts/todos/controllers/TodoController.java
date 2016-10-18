@@ -90,10 +90,6 @@ public class TodoController extends Controller {
             );
     }
 
-    private void reopenItem(TodoItem it) {
-        it.open();
-    }
-
     public Result getAllItems() {
         TodoItems items = findAllItems();
         return ok(toJson(items));
@@ -139,6 +135,10 @@ public class TodoController extends Controller {
 
     private void finishItem(TodoItem it) {
         it.done();
+    }
+
+    private void reopenItem(TodoItem it) {
+        it.reopen();
     }
 
 }

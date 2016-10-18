@@ -9,4 +9,4 @@ GET           /todos/:id             pl.devthoughts.todos.controllers.TodoContro
 PUT           /todos/:id             pl.devthoughts.todos.controllers.TodoController.updateItem(id: String)
 DELETE        /todos/:id             pl.devthoughts.todos.controllers.TodoController.deleteItem(id: String)
 POST          /todos/:id/done        pl.devthoughts.todos.controllers.TodoController.done(id: String)
-POST          /todos/:id/open        pl.devthoughts.todos.controllers.TodoController.open(id: String)
+POST          /todos/:id/open        pl.devthoughts.todos.controllers.TodoController.reopen(id: String)

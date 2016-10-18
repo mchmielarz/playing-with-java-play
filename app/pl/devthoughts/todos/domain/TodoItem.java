@@ -61,7 +61,7 @@ public class TodoItem {
         this.status = TodoItemStatus.DONE;
     }
 
-    public void open() {
+    public void reopen() {
         this.status = TodoItemStatus.OPEN;
     }
 }
