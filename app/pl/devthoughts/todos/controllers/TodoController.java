@@ -80,7 +80,7 @@ public class TodoController extends Controller {
             );
     }
 
-    public Result open(String id) {
+    public Result reopen(String id) {
         return doCall
             (id, (TodoItem it) -> {
                     it.open();
