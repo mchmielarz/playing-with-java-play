@@ -35,7 +35,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
 
     public Option<TodoItemId> saveItem(TodoItem item) {
         return Try.of(() -> insertNewItem(item))
-            .map(newItem -> new TodoItemId(newItem.getId()))
+            .map(id -> new TodoItemId(id))
             .onSuccess(stmt -> LOGGER.info("New todo item stored: {} {}", item.getId(), item.getName()))
             .onFailure(ex -> LOGGER.error("Cannot store todo item: {}", item.getName(), ex))
             .getOption();
@@ -48,7 +48,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
             .getOption();
     }
 
-    private TodoItem insertNewItem(TodoItem item) throws SQLException {
+    private String insertNewItem(TodoItem item) throws SQLException {
         try(Connection conn = db.getConnection()) {
             try (final PreparedStatement stmt = conn.prepareStatement(INSERT_TODO_ITEM)) {
                 stmt.setString(1, item.getId());
@@ -58,7 +58,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
                 stmt.executeQuery();
             }
         }
-        return item;
+        return item.getId();
     }
 
     private TodoItem fetchItem(String id) throws SQLException {
