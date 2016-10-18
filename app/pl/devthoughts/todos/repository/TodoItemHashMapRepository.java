@@ -9,6 +9,7 @@ import pl.devthoughts.todos.domain.TodoItems;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static javaslang.control.Option.some;
 
 public class TodoItemHashMapRepository implements TodoItemRepository {
 
@@ -19,9 +20,9 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public TodoItemId saveItem(TodoItem item) {
+    public Option<TodoItemId> saveItem(TodoItem item) {
         map.put(item.getId(), item);
-        return new TodoItemId(item.getId());
+        return some(new TodoItemId(item.getId()));
     }
 
     @Override
