@@ -6,6 +6,7 @@ import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
 import pl.devthoughts.todos.repository.TodoItemHashMapRepository;
+import pl.devthoughts.todos.repository.TodoItemRepository;
 import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
@@ -25,7 +26,7 @@ public class TodoController extends Controller {
 
     private static final Logger.ALogger LOGGER = Logger.of(TodoController.class);
 
-    private final TodoItemHashMapRepository repository = new TodoItemHashMapRepository();
+    private final TodoItemRepository repository = new TodoItemHashMapRepository();
 
     public TodoController() {
 
