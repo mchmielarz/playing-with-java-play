@@ -1,17 +1,16 @@
 package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Maps;
 import javaslang.control.Option;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
+import pl.devthoughts.todos.repository.TodoItemHashMapRepository;
 import play.Logger;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.util.Map;
 import java.util.function.Function;
 
 import static javaslang.API.$;
@@ -26,16 +25,16 @@ public class TodoController extends Controller {
 
     private static final Logger.ALogger LOGGER = Logger.of(TodoController.class);
 
-    private final Map<String, TodoItem> repository;
+    private final TodoItemHashMapRepository repository = new TodoItemHashMapRepository();
 
     public TodoController() {
-        repository = Maps.newHashMap();
+
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public Result addItem() {
         TodoItemRequest req = getRequest();
-        TodoItemId itemId = saveItem(TodoItem.fromRequest(req));
+        TodoItemId itemId = repository.saveItem(TodoItem.fromRequest(req));
         LOGGER.info("Item {} has been created with id {}", req.getName(), itemId.getId());
         return created(toJson(itemId));
     }
@@ -53,7 +52,7 @@ public class TodoController extends Controller {
         final TodoItemRequest req = getRequest();
         return doCall
             (id, (TodoItem it) -> {
-                    updateItem(it, req);
+                repository.updateItem(it, req);
                     LOGGER.info("Item {} has been updated", id);
                     return ok();
                 }
@@ -63,7 +62,7 @@ public class TodoController extends Controller {
     public Result deleteItem(String id) {
         return doCall
             (id, (TodoItem it) -> {
-                    removeItem(it);
+                repository.removeItem(it);
                     LOGGER.info("Item {} has been removed", id);
                     return ok();
                 }
@@ -73,7 +72,7 @@ public class TodoController extends Controller {
     public Result done(String id) {
         return doCall
             (id, (TodoItem it) -> {
-                finishItem(it);
+                repository.finishItem(it);
                 LOGGER.info("Item {} changed status to done", id);
                     return ok();
                 }
@@ -83,7 +82,7 @@ public class TodoController extends Controller {
     public Result reopen(String id) {
         return doCall
             (id, (TodoItem it) -> {
-                reopenItem(it);
+                repository.reopenItem(it);
                 LOGGER.info("Item {} changed status to open", id);
                     return ok();
                 }
@@ -91,12 +90,12 @@ public class TodoController extends Controller {
     }
 
     public Result getAllItems() {
-        TodoItems items = findAllItems();
+        TodoItems items = repository.findAllItems();
         return ok(toJson(items));
     }
 
     private Result doCall(String id, Function<TodoItem, Result> operation) {
-        Option<TodoItem> item = findItem(id);
+        Option<TodoItem> item = repository.findItem(id);
         return Match(item).of(
             Case(Some($()), operation),
             Case(None(), () -> {
@@ -109,36 +108,6 @@ public class TodoController extends Controller {
     private TodoItemRequest getRequest() {
         JsonNode json = request().body().asJson();
         return fromJson(json, TodoItemRequest.class);
-    }
-
-    private TodoItemId saveItem(TodoItem item) {
-        this.repository.put(item.getId(), item);
-        return new TodoItemId(item.getId());
-    }
-
-    private Option<TodoItem> findItem(String id) {
-        return Option.of(repository.get(id));
-    }
-
-    private void updateItem(TodoItem item, TodoItemRequest req) {
-        TodoItem updatedItem = item.updateWith(req);
-        this.repository.put(updatedItem.getId(), updatedItem);
-    }
-
-    private void removeItem(TodoItem item) {
-        this.repository.remove(item.getId());
-    }
-
-    private TodoItems findAllItems() {
-        return new TodoItems(this.repository.values());
-    }
-
-    private void finishItem(TodoItem it) {
-        it.done();
-    }
-
-    private void reopenItem(TodoItem it) {
-        it.reopen();
     }
 
 }
