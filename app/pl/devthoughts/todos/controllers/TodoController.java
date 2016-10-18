@@ -12,6 +12,7 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import javax.inject.Inject;
 import java.util.function.Function;
 
 import static javaslang.API.$;
@@ -26,10 +27,11 @@ public class TodoController extends Controller {
 
     private static final Logger.ALogger LOGGER = Logger.of(TodoController.class);
 
-    private final TodoItemRepository repository = new TodoItemHashMapRepository();
+    private final TodoItemRepository repository;
 
-    public TodoController() {
-
+    @Inject
+    public TodoController(TodoItemRepository repository) {
+        this.repository = repository;
     }
 
     @BodyParser.Of(BodyParser.Json.class)

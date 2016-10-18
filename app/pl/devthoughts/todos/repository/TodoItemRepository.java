@@ -7,6 +7,7 @@ import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
 
 public interface TodoItemRepository {
+
     TodoItemId saveItem(TodoItem item);
 
     Option<TodoItem> findItem(String id);
@@ -20,4 +21,5 @@ public interface TodoItemRepository {
     void finishItem(TodoItem it);
 
     void reopenItem(TodoItem it);
+
 }
