@@ -8,7 +8,7 @@ import pl.devthoughts.todos.domain.TodoItems;
 
 public interface TodoItemRepository {
 
-    TodoItemId saveItem(TodoItem item);
+    Option<TodoItemId> saveItem(TodoItem item);
 
     Option<TodoItem> findItem(String id);
 

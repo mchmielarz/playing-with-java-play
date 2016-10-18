@@ -20,6 +20,7 @@ import static javaslang.API.Case;
 import static javaslang.API.Match;
 import static javaslang.Patterns.None;
 import static javaslang.Patterns.Some;
+import static pl.devthoughts.todos.domain.TodoItem.fromRequest;
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
 
@@ -37,9 +38,16 @@ public class TodoController extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public Result addItem() {
         TodoItemRequest req = getRequest();
-        TodoItemId itemId = repository.saveItem(TodoItem.fromRequest(req));
-        LOGGER.info("Item {} has been created with id {}", req.getName(), itemId.getId());
-        return created(toJson(itemId));
+        return Match(repository.saveItem(fromRequest(req))).of(
+            Case(Some($()), itemId -> {
+                LOGGER.info("Item {} has been created with id {}", req.getName(), itemId.getId());
+                return created(toJson(itemId.getId()));
+            }),
+            Case(None(), () -> {
+                LOGGER.warn("Cannot create a new item from request {}", req);
+                return notFound();
+            })
+        );
     }
 
     public Result getItem(String id) {
