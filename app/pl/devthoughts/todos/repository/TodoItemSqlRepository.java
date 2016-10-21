@@ -65,7 +65,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
         TodoItem item;
         try (Connection conn = db.getConnection()) {
             try (final PreparedStatement stmt = conn.prepareStatement(FIND_BY_ID)) {
-                stmt.setNString(1, id);
+                stmt.setString(1, id);
                 try (final ResultSet result = stmt.executeQuery()) {
                     String status = result.getString("status");
                     String name = result.getString("name");
