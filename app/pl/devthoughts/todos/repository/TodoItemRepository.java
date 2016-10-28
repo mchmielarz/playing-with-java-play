@@ -10,7 +10,7 @@ public interface TodoItemRepository {
 
     Option<TodoItemId> saveItem(TodoItem item);
 
-    Option<TodoItem> findItem(String id);
+    Option<TodoItem> findItem(TodoItemId id);
 
     void updateItem(TodoItem item, TodoItemRequest req);
 

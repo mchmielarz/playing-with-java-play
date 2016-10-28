@@ -3,6 +3,7 @@ package pl.devthoughts.todos.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import javaslang.control.Option;
 import pl.devthoughts.todos.domain.TodoItem;
+import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
 import pl.devthoughts.todos.repository.TodoItemRepository;
 import play.Logger;
@@ -39,7 +40,7 @@ public class TodoController extends Controller {
         return Match(repository.saveItem(fromRequest(req))).of(
             Case(Some($()), itemId -> {
                 LOGGER.info("Item {} has been created with id {}", req.getName(), itemId.getId());
-                return created(toJson(itemId.getId()));
+                return created(toJson(itemId));
             }),
             Case(None(), () -> {
                 LOGGER.warn("Cannot create a new item from request {}", req);
@@ -104,7 +105,7 @@ public class TodoController extends Controller {
     }
 
     private Result doCall(String id, Function<TodoItem, Result> operation) {
-        Option<TodoItem> item = repository.findItem(id);
+        Option<TodoItem> item = repository.findItem(new TodoItemId(id));
         return Match(item).of(
             Case(Some($()), operation),
             Case(None(), () -> {

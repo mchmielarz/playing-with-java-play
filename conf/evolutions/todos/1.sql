@@ -2,10 +2,10 @@
 
 # --- !Ups
 create table todos (
-  "id" TEXT NOT NULL UNIQUE PRIMARY KEY,
-  "name" TEXT NOT NULL,
+  "item_id" VARCHAR(36) CONSTRAINT id_key PRIMARY KEY,
+  "item_name" TEXT NOT NULL,
   "status" TEXT NOT NULL,
-  "dueDate" TIMESTAMP NOT NULL
+  "due_date" TIMESTAMP NOT NULL
 );
 
 # --- !Downs

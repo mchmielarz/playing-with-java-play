@@ -26,8 +26,8 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public Option<TodoItem> findItem(String id) {
-        return Option.of(map.get(id));
+    public Option<TodoItem> findItem(TodoItemId id) {
+        return Option.of(map.get(id.getId()));
     }
 
     @Override

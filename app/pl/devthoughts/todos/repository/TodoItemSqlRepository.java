@@ -21,10 +21,9 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     private static final Logger.ALogger LOGGER = Logger.of(TodoItemSqlRepository.class);
 
     public static final String INSERT_TODO_ITEM =
-        "INSERT INTO todo_items (item_id, item_name, status, due_date) VALUES(?, ?, ?, ?)";
+        "INSERT INTO todos (item_id, item_name, status, due_date) VALUES(?, ?, ?, ?)";
     public static final String FIND_BY_ID =
-        "SELECT * FROM todo_items WHERE id = ?";
-
+        "SELECT * FROM todos WHERE item_id = ?";
 
     private final Database db;
 
@@ -36,13 +35,13 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     public Option<TodoItemId> saveItem(TodoItem item) {
         return Try.of(() -> insertNewItem(item))
             .map(id -> new TodoItemId(id))
-            .onSuccess(stmt -> LOGGER.info("New todo item stored: {} {}", item.getId(), item.getName()))
+            .onSuccess(itemId -> LOGGER.info("New todo item stored: {} {}", itemId.getId(), item.getName()))
             .onFailure(ex -> LOGGER.error("Cannot store todo item: {}", item.getName(), ex))
             .getOption();
     }
 
-    public Option<TodoItem> findItem(String id) {
-        return Try.of(() -> fetchItem(id))
+    public Option<TodoItem> findItem(TodoItemId id) {
+        return Try.of(() -> fetchItem(id.getId()))
             .onSuccess(item -> LOGGER.info("Todo item found: {}", item))
             .onFailure(ex -> LOGGER.error("Cannot find todo item with id: {}", id, ex))
             .getOption();
@@ -55,7 +54,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
                 stmt.setString(2, item.getName());
                 stmt.setString(3, item.getStatus().name());
                 stmt.setTimestamp(4, asTimestamp(item.getDueDate()));
-                stmt.executeQuery();
+                stmt.executeUpdate();
             }
         }
         return item.getId();
@@ -67,9 +66,10 @@ public class TodoItemSqlRepository implements TodoItemRepository {
             try (final PreparedStatement stmt = conn.prepareStatement(FIND_BY_ID)) {
                 stmt.setString(1, id);
                 try (final ResultSet result = stmt.executeQuery()) {
+                    result.next();
                     String status = result.getString("status");
-                    String name = result.getString("name");
-                    Timestamp dueDate = result.getTimestamp("dueDate");
+                    String name = result.getString("item_name");
+                    Timestamp dueDate = result.getTimestamp("due_date");
                     item = new TodoItem(id, name, asDate(dueDate), TodoItemStatus.valueOf(status));
                 }
             }
