@@ -2,3 +2,5 @@ Playing with Play. In Java
 =================================
 
 This is the project I'm using to learn Play Framework with Java usage. It implements a simple todo list.
+
+Most of the content comes from the Play series on my blog: [devthoughts.pl](http://www.devthoughts.pl/tag/play/)
