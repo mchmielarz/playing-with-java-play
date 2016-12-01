@@ -1,4 +1,4 @@
-package pl.devthoughts.todos.repository;
+package pl.devthoughts.todos.repository.sql;
 
 import javaslang.control.Option;
 import javaslang.control.Try;
@@ -7,6 +7,7 @@ import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItemStatus;
 import pl.devthoughts.todos.domain.TodoItems;
+import pl.devthoughts.todos.repository.TodoItemRepository;
 import play.Logger;
 import play.db.Database;
 import play.db.NamedDatabase;

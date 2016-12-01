@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
+import pl.devthoughts.todos.repository.sql.TodoItemSqlRepository;
 import play.db.Database;
 import play.db.Databases;
 import play.db.evolutions.Evolutions;

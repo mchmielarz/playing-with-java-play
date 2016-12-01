@@ -1,10 +1,11 @@
-package pl.devthoughts.todos.repository;
+package pl.devthoughts.todos.repository.hash;
 
 import javaslang.control.Option;
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
+import pl.devthoughts.todos.repository.TodoItemRepository;
 
 import java.util.Map;
 
