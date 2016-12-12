@@ -1,7 +1,6 @@
 package pl.devthoughts.todos.repository.hash;
 
 import javaslang.control.Option;
-import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
@@ -32,9 +31,8 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public void updateItem(TodoItem item, TodoItemRequest req) {
-        TodoItem updatedItem = item.updateWith(req);
-        map.put(updatedItem.getId(), updatedItem);
+    public void updateItem(TodoItem item) {
+        map.put(item.getId(), item);
     }
 
     @Override

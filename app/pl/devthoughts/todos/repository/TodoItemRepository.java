@@ -1,7 +1,6 @@
 package pl.devthoughts.todos.repository;
 
 import javaslang.control.Option;
-import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
@@ -12,7 +11,7 @@ public interface TodoItemRepository {
 
     Option<TodoItem> findItem(TodoItemId id);
 
-    void updateItem(TodoItem item, TodoItemRequest req);
+    void updateItem(TodoItem item);
 
     void removeItem(TodoItem item);
 

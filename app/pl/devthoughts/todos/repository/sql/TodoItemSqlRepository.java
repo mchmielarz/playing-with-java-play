@@ -2,7 +2,6 @@ package pl.devthoughts.todos.repository.sql;
 
 import javaslang.control.Option;
 import javaslang.control.Try;
-import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItemStatus;
@@ -85,7 +84,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     }
 
     @Override
-    public void updateItem(TodoItem item, TodoItemRequest req) {
+    public void updateItem(TodoItem item) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 

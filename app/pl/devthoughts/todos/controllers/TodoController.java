@@ -11,8 +11,9 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import javax.inject.Inject;
 import java.util.function.Function;
+
+import javax.inject.Inject;
 
 import static javaslang.API.$;
 import static javaslang.API.Case;
@@ -62,7 +63,7 @@ public class TodoController extends Controller {
         final TodoItemRequest req = getRequest();
         return doCall
             (id, (TodoItem it) -> {
-                repository.updateItem(it, req);
+                repository.updateItem(it.updateWith(req));
                     LOGGER.info("Item {} has been updated", id);
                     return ok();
                 }
