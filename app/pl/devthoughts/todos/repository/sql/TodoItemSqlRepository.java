@@ -12,10 +12,15 @@ import play.Logger;
 import play.db.Database;
 import play.db.NamedDatabase;
 
-import javax.inject.Inject;
-import java.sql.*;
-import java.util.Calendar;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.inject.Inject;
 
 public class TodoItemSqlRepository implements TodoItemRepository {
 
@@ -27,6 +32,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
         "SELECT * FROM todos WHERE item_id = ?";
 
     private final Database db;
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 
     @Inject
     public TodoItemSqlRepository(@NamedDatabase("todos") Database db) {
@@ -54,7 +60,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
                 stmt.setString(1, item.getId());
                 stmt.setString(2, item.getName());
                 stmt.setString(3, item.getStatus().name());
-                stmt.setTimestamp(4, asTimestamp(item.getDueDate()));
+                stmt.setString(4, asString(item.getDueDate()));
                 stmt.executeUpdate();
             }
         }
@@ -70,7 +76,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
                     result.next();
                     String status = result.getString("status");
                     String name = result.getString("item_name");
-                    Timestamp dueDate = result.getTimestamp("due_date");
+                    String dueDate = result.getString("due_date");
                     item = new TodoItem(id, name, asDate(dueDate), TodoItemStatus.valueOf(status));
                 }
             }
@@ -103,13 +109,15 @@ public class TodoItemSqlRepository implements TodoItemRepository {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
-    private Date asDate(Timestamp dueDate) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(dueDate.getTime());
-        return cal.getTime();
+    private Date asDate(String dueDate) throws SQLException {
+        try {
+            return DATE_FORMAT.parse(dueDate);
+        } catch (ParseException e) {
+            throw new SQLException(e);
+        }
     }
 
-    private Timestamp asTimestamp(Date dueDate) {
-        return Timestamp.from(dueDate.toInstant());
+    private String asString(Date dueDate) {
+        return DATE_FORMAT.format(dueDate);
     }
 }
