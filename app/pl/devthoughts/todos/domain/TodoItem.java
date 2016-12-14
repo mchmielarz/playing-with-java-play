@@ -15,7 +15,7 @@ public class TodoItem {
         (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dueDate;
 
-    static public TodoItem fromRequest(TodoItemRequest req) {
+    static public TodoItem from(TodoItemRequest req) {
         return new TodoItem(req.getName(), req.getDueDate());
     }
 
