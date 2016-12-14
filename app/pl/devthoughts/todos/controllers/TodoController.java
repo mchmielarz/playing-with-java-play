@@ -51,7 +51,7 @@ public class TodoController extends Controller {
     }
 
     public Result getItem(String id) {
-        return doCall
+        return withFoundItem
             (id, (TodoItem it) -> {
                 LOGGER.info("Returning item {}", id);
                 return ok(toJson(it));
@@ -61,7 +61,7 @@ public class TodoController extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public Result updateItem(String id) {
         final TodoItemRequest req = getRequest();
-        return doCall
+        return withFoundItem
             (id, (TodoItem it) -> {
                 repository.updateItem(it.updateWith(req));
                     LOGGER.info("Item {} has been updated", id);
@@ -71,7 +71,7 @@ public class TodoController extends Controller {
     }
 
     public Result deleteItem(String id) {
-        return doCall
+        return withFoundItem
             (id, (TodoItem it) -> {
                 repository.removeItem(it);
                     LOGGER.info("Item {} has been removed", id);
@@ -81,7 +81,7 @@ public class TodoController extends Controller {
     }
 
     public Result done(String id) {
-        return doCall
+        return withFoundItem
             (id, (TodoItem it) -> {
                 repository.finishItem(it);
                 LOGGER.info("Item {} changed status to done", id);
@@ -91,7 +91,7 @@ public class TodoController extends Controller {
     }
 
     public Result reopen(String id) {
-        return doCall
+        return withFoundItem
             (id, (TodoItem it) -> {
                 repository.reopenItem(it);
                 LOGGER.info("Item {} changed status to open", id);
@@ -105,7 +105,7 @@ public class TodoController extends Controller {
         return ok(toJson(items));
     }
 
-    private Result doCall(String id, Function<TodoItem, Result> operation) {
+    private Result withFoundItem(String id, Function<TodoItem, Result> operation) {
         Option<TodoItem> item = repository.findItem(new TodoItemId(id));
         return Match(item).of(
             Case(Some($()), operation),
