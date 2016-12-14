@@ -53,9 +53,10 @@ public class TodoController extends Controller {
     public Result getItem(String id) {
         return withFoundItem
             (id, (TodoItem it) -> {
-                LOGGER.info("Returning item {}", id);
-                return ok(toJson(it));
-            });
+                    LOGGER.info("Returning item {}", id);
+                    return ok(toJson(it));
+                }
+            );
     }
 
     @BodyParser.Of(BodyParser.Json.class)
@@ -63,7 +64,7 @@ public class TodoController extends Controller {
         final TodoItemRequest req = getRequest();
         return withFoundItem
             (id, (TodoItem it) -> {
-                repository.updateItem(it.updateWith(req));
+                    repository.updateItem(it.updateWith(req));
                     LOGGER.info("Item {} has been updated", id);
                     return ok();
                 }
@@ -73,7 +74,7 @@ public class TodoController extends Controller {
     public Result deleteItem(String id) {
         return withFoundItem
             (id, (TodoItem it) -> {
-                repository.removeItem(it);
+                    repository.removeItem(it);
                     LOGGER.info("Item {} has been removed", id);
                     return ok();
                 }
@@ -83,8 +84,8 @@ public class TodoController extends Controller {
     public Result done(String id) {
         return withFoundItem
             (id, (TodoItem it) -> {
-                repository.finishItem(it);
-                LOGGER.info("Item {} changed status to done", id);
+                    repository.finishItem(it);
+                    LOGGER.info("Item {} changed status to done", id);
                     return ok();
                 }
             );
@@ -93,8 +94,8 @@ public class TodoController extends Controller {
     public Result reopen(String id) {
         return withFoundItem
             (id, (TodoItem it) -> {
-                repository.reopenItem(it);
-                LOGGER.info("Item {} changed status to open", id);
+                    repository.reopenItem(it);
+                    LOGGER.info("Item {} changed status to open", id);
                     return ok();
                 }
             );
