@@ -1,15 +1,15 @@
 package pl.devthoughts.todos.repository.hash;
 
 import javaslang.control.Option;
+import javaslang.control.Try;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
-import pl.devthoughts.todos.domain.TodoItems;
 import pl.devthoughts.todos.repository.TodoItemRepository;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static javaslang.control.Option.some;
 
 public class TodoItemHashMapRepository implements TodoItemRepository {
 
@@ -20,14 +20,14 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public Option<TodoItemId> saveItem(TodoItem item) {
+    public Try<TodoItemId> saveItem(TodoItem item) {
         map.put(item.getId(), item);
-        return some(new TodoItemId(item.getId()));
+        return Try.success(new TodoItemId(item.getId()));
     }
 
     @Override
-    public Option<TodoItem> findItem(TodoItemId id) {
-        return Option.of(map.get(id.getId()));
+    public Try<TodoItem> findItem(TodoItemId id) {
+        return Option.of(map.get(id.getId())).toTry();
     }
 
     @Override
@@ -41,8 +41,8 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public TodoItems findAllItems() {
-        return new TodoItems(map.values());
+    public Collection<TodoItem> findAllItems() {
+        return map.values();
     }
 
     @Override

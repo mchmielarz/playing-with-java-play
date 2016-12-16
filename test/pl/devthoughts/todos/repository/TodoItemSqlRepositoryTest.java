@@ -40,10 +40,10 @@ public class TodoItemSqlRepositoryTest {
         final Date dueDate = new Date();
         final String name = "Do something";
 
-        final Option<TodoItemId> itemId = repository.saveItem(new TodoItem(name, dueDate));
+        final Option<TodoItemId> itemId = repository.saveItem(new TodoItem(name, dueDate)).getOption();
         assertThat(itemId.isDefined()).isEqualTo(true);
 
-        final Option<TodoItem> item = repository.findItem(itemId.get());
+        final Option<TodoItem> item = repository.findItem(itemId.get()).getOption();
         assertThat(item.isDefined());
         assertThat(item.get())
             .hasName(name)

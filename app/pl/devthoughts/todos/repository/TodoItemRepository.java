@@ -1,21 +1,22 @@
 package pl.devthoughts.todos.repository;
 
-import javaslang.control.Option;
+import javaslang.control.Try;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
-import pl.devthoughts.todos.domain.TodoItems;
+
+import java.util.Collection;
 
 public interface TodoItemRepository {
 
-    Option<TodoItemId> saveItem(TodoItem item);
+    Try<TodoItemId> saveItem(TodoItem item);
 
-    Option<TodoItem> findItem(TodoItemId id);
+    Try<TodoItem> findItem(TodoItemId id);
 
     void updateItem(TodoItem item);
 
     void removeItem(TodoItem item);
 
-    TodoItems findAllItems();
+    Collection<TodoItem> findAllItems();
 
     void finishItem(TodoItem it);
 

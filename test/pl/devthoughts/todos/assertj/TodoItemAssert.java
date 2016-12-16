@@ -6,6 +6,8 @@ import pl.devthoughts.todos.domain.TodoItem;
 import java.util.Date;
 import java.util.Objects;
 
+import static pl.devthoughts.todos.repository.sql.TodoItemSqlRepository.DATE_FORMAT;
+
 public class TodoItemAssert extends AbstractAssert<TodoItemAssert, TodoItem> {
 
     public TodoItemAssert(TodoItem actual) {
@@ -26,8 +28,10 @@ public class TodoItemAssert extends AbstractAssert<TodoItemAssert, TodoItem> {
 
     public TodoItemAssert hasDueDate(Date dueDate) {
         isNotNull();
-        if (!Objects.equals(actual.getDueDate(), dueDate)) {
-            failWithMessage("Expected item's dueDate to be <%s> but was <%s>", dueDate, actual.getDueDate());
+        final String expected = DATE_FORMAT.format(dueDate);
+        final String current = DATE_FORMAT.format(this.actual.getDueDate());
+        if (!Objects.equals(expected, current)) {
+            failWithMessage("Expected item's dueDate to be <%s> but was <%s>", dueDate, this.actual.getDueDate());
         }
         return this;
     }

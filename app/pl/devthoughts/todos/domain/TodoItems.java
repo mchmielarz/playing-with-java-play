@@ -9,6 +9,10 @@ public class TodoItems {
 
     private final Collection<TodoItem> items;
 
+    public static TodoItems wrap(Collection<TodoItem> items) {
+        return items.isEmpty() ? EMPTY : new TodoItems(items);
+    }
+
     public TodoItems(Collection<TodoItem> items) {
         this.items = items;
     }

@@ -1,7 +1,6 @@
 package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import javaslang.control.Option;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
@@ -18,8 +17,8 @@ import javax.inject.Inject;
 import static javaslang.API.$;
 import static javaslang.API.Case;
 import static javaslang.API.Match;
-import static javaslang.Patterns.None;
-import static javaslang.Patterns.Some;
+import static javaslang.Patterns.Failure;
+import static javaslang.Patterns.Success;
 import static pl.devthoughts.todos.domain.TodoItem.from;
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
@@ -38,16 +37,12 @@ public class TodoController extends Controller {
     @BodyParser.Of(BodyParser.Json.class)
     public Result addItem() {
         TodoItemRequest request = getRequest();
-        return Match(repository.saveItem(from(request))).of(
-            Case(Some($()), itemId -> {
-                LOGGER.info("Item {} has been created with id {}", request.getName(), itemId.getId());
-                return created(toJson(itemId));
-            }),
-            Case(None(), () -> {
-                LOGGER.warn("Cannot create a new item from request {}", request);
-                return notFound();
-            })
-        );
+        return repository.saveItem(from(request))
+            .onSuccess(itemId -> LOGGER.info("Item {} has been created with id {}", request.getName(), itemId.getId()))
+            .onFailure(ex -> LOGGER.warn("Cannot create a new item from request {}", request))
+            .toOption()
+            .map(itemId -> created(toJson(itemId)))
+            .getOrElse(notFound());
     }
 
     public Result getItem(String id) {
@@ -102,19 +97,19 @@ public class TodoController extends Controller {
     }
 
     public Result getAllItems() {
-        TodoItems items = repository.findAllItems();
+        final TodoItems items = TodoItems.wrap(repository.findAllItems());
         return ok(toJson(items));
     }
 
     private Result withFoundItem(String id, Function<TodoItem, Result> operation) {
-        Option<TodoItem> item = repository.findItem(new TodoItemId(id));
-        return Match(item).of(
-            Case(Some($()), operation),
-            Case(None(), () -> {
-                LOGGER.warn("Cannot find an item with id {}", id);
-                return notFound();
-            })
-        );
+        return repository.findItem(new TodoItemId(id))
+            .transform(t -> Match(t).of(
+                Case(Success($()), operation),
+                Case(Failure($()), ex -> {
+                    LOGGER.warn("Cannot find an item with id {}", id);
+                    return notFound();
+                })
+            ));
     }
 
     private TodoItemRequest getRequest() {

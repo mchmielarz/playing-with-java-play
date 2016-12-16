@@ -1,8 +1,8 @@
 package pl.devthoughts.todos.modules;
 
 import com.google.inject.AbstractModule;
-import pl.devthoughts.todos.repository.hash.TodoItemHashMapRepository;
 import pl.devthoughts.todos.repository.TodoItemRepository;
+import pl.devthoughts.todos.repository.hash.TodoItemHashMapRepository;
 
 public class TodosModule extends AbstractModule {
 

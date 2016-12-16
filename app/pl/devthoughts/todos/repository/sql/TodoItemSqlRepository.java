@@ -1,11 +1,9 @@
 package pl.devthoughts.todos.repository.sql;
 
-import javaslang.control.Option;
 import javaslang.control.Try;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItemStatus;
-import pl.devthoughts.todos.domain.TodoItems;
 import pl.devthoughts.todos.repository.TodoItemRepository;
 import play.Logger;
 import play.db.Database;
@@ -17,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -38,19 +37,17 @@ public class TodoItemSqlRepository implements TodoItemRepository {
         this.db = db;
     }
 
-    public Option<TodoItemId> saveItem(TodoItem item) {
+    public Try<TodoItemId> saveItem(TodoItem item) {
         return Try.of(() -> insertNewItem(item))
             .map(id -> new TodoItemId(id))
             .onSuccess(itemId -> LOGGER.info("New todo item stored: {} {}", itemId.getId(), item.getName()))
-            .onFailure(ex -> LOGGER.error("Cannot store todo item: {}", item.getName(), ex))
-            .getOption();
+            .onFailure(ex -> LOGGER.error("Cannot store todo item: {}", item.getName(), ex));
     }
 
-    public Option<TodoItem> findItem(TodoItemId id) {
+    public Try<TodoItem> findItem(TodoItemId id) {
         return Try.of(() -> fetchItem(id.getId()))
             .onSuccess(item -> LOGGER.info("Todo item found: {}", item))
-            .onFailure(ex -> LOGGER.error("Cannot find todo item with id: {}", id, ex))
-            .getOption();
+            .onFailure(ex -> LOGGER.error("Cannot find todo item with id: {}", id, ex));
     }
 
     private String insertNewItem(TodoItem item) throws SQLException {
@@ -94,7 +91,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     }
 
     @Override
-    public TodoItems findAllItems() {
+    public Collection<TodoItem> findAllItems() {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
