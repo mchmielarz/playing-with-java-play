@@ -5,7 +5,6 @@ import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItemStatus;
 import pl.devthoughts.todos.repository.TodoItemRepository;
-import play.Logger;
 import play.db.Database;
 import play.db.NamedDatabase;
 
@@ -13,7 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -22,11 +21,9 @@ import javax.inject.Inject;
 
 public class TodoItemSqlRepository implements TodoItemRepository {
 
-    private static final Logger.ALogger LOGGER = Logger.of(TodoItemSqlRepository.class);
-
-    public static final String INSERT_TODO_ITEM =
+    private static final String INSERT_TODO_ITEM =
         "INSERT INTO todos (item_id, item_name, status, due_date) VALUES(?, ?, ?, ?)";
-    public static final String FIND_BY_ID =
+    private static final String FIND_BY_ID =
         "SELECT * FROM todos WHERE item_id = ?";
 
     private final Database db;
@@ -39,15 +36,11 @@ public class TodoItemSqlRepository implements TodoItemRepository {
 
     public Try<TodoItemId> saveItem(TodoItem item) {
         return Try.of(() -> insertNewItem(item))
-            .map(id -> new TodoItemId(id))
-            .onSuccess(itemId -> LOGGER.info("New todo item stored: {} {}", itemId.getId(), item.getName()))
-            .onFailure(ex -> LOGGER.error("Cannot store todo item: {}", item.getName(), ex));
+            .map(id -> new TodoItemId(id));
     }
 
     public Try<TodoItem> findItem(TodoItemId id) {
-        return Try.of(() -> fetchItem(id.getId()))
-            .onSuccess(item -> LOGGER.info("Todo item found: {}", item))
-            .onFailure(ex -> LOGGER.error("Cannot find todo item with id: {}", id, ex));
+        return Try.of(() -> fetchItem(id.getId()));
     }
 
     private String insertNewItem(TodoItem item) throws SQLException {
@@ -56,7 +49,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
                 stmt.setString(1, item.getId());
                 stmt.setString(2, item.getName());
                 stmt.setString(3, item.getStatus().name());
-                stmt.setString(4, asString(item.getDueDate()));
+                stmt.setTimestamp(4, asTimestamp(item.getDueDate()));
                 stmt.executeUpdate();
             }
         }
@@ -72,7 +65,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
                     result.next();
                     String status = result.getString("status");
                     String name = result.getString("item_name");
-                    String dueDate = result.getString("due_date");
+                    Timestamp dueDate = result.getTimestamp("due_date");
                     item = new TodoItem(id, name, asDate(dueDate), TodoItemStatus.valueOf(status));
                 }
             }
@@ -81,12 +74,12 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     }
 
     @Override
-    public void updateItem(TodoItem item) {
+    public Try<TodoItem> updateItem(String itemId, String name, Date dueDate) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
     @Override
-    public void removeItem(TodoItem item) {
+    public Try<TodoItem> removeItem(String itemId) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
@@ -96,24 +89,20 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     }
 
     @Override
-    public void finishItem(TodoItem it) {
+    public Try<TodoItem> finishItem(TodoItemId itemId) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
     @Override
-    public void reopenItem(TodoItem it) {
+    public Try<TodoItem> reopenItem(TodoItemId itemId) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
-    private Date asDate(String dueDate) throws SQLException {
-        try {
-            return DATE_FORMAT.parse(dueDate);
-        } catch (ParseException e) {
-            throw new SQLException(e);
-        }
+    private Date asDate(Timestamp dueDate) {
+        return Date.from(dueDate.toInstant());
     }
 
-    private String asString(Date dueDate) {
-        return DATE_FORMAT.format(dueDate);
+    private Timestamp asTimestamp(Date dueDate) {
+        return Timestamp.from(dueDate.toInstant());
     }
 }

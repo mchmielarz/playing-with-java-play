@@ -9,9 +9,17 @@ import play.mvc.Http.RequestBuilder;
 import play.mvc.Result;
 import play.test.WithApplication;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.revinate.assertj.json.JsonPathAssert.assertThat;
-import static play.test.Helpers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static play.test.Helpers.CREATED;
+import static play.test.Helpers.DELETE;
+import static play.test.Helpers.GET;
+import static play.test.Helpers.NOT_FOUND;
+import static play.test.Helpers.OK;
+import static play.test.Helpers.POST;
+import static play.test.Helpers.PUT;
+import static play.test.Helpers.contentAsString;
+import static play.test.Helpers.route;
 
 public class RoutesTest extends WithApplication {
 

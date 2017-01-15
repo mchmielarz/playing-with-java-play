@@ -7,6 +7,7 @@ import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.repository.TodoItemRepository;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
@@ -27,17 +28,21 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
 
     @Override
     public Try<TodoItem> findItem(TodoItemId id) {
-        return Option.of(map.get(id.getId())).toTry();
+        return foundItem(id.getId()).toTry();
     }
 
     @Override
-    public void updateItem(TodoItem item) {
-        map.put(item.getId(), item);
+    public Try<TodoItem> updateItem(String itemId, String name, Date dueDate) {
+        return foundItem(itemId)
+            .map(item -> item.withName(name))
+            .map(item -> item.withDueDate(dueDate))
+            .peek(item -> map.put(item.getId(), item))
+            .toTry();
     }
 
     @Override
-    public void removeItem(TodoItem item) {
-        map.remove(item.getId());
+    public Try<TodoItem> removeItem(String itemId) {
+        return Try.of(() -> map.remove(itemId));
     }
 
     @Override
@@ -46,12 +51,20 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public void finishItem(TodoItem it) {
-        it.done();
+    public Try<TodoItem> finishItem(TodoItemId itemId) {
+        return foundItem(itemId.getId())
+            .peek(item -> item.done())
+            .toTry();
     }
 
     @Override
-    public void reopenItem(TodoItem it) {
-        it.reopen();
+    public Try<TodoItem> reopenItem(TodoItemId itemId) {
+        return foundItem(itemId.getId())
+            .peek(item -> item.reopen())
+            .toTry();
+    }
+
+    private Option<TodoItem> foundItem(String itemId) {
+        return Option.of(map.get(itemId));
     }
 }

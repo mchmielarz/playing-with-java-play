@@ -53,8 +53,14 @@ public class TodoItem {
         return status;
     }
 
-    public TodoItem updateWith(TodoItemRequest req) {
-        return new TodoItem(this.id, req.getName(), req.getDueDate(), this.status);
+    public TodoItem withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public TodoItem withDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+        return this;
     }
 
     public void done() {

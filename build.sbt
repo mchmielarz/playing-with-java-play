@@ -13,5 +13,8 @@ libraryDependencies ++= Seq(
   "com.revinate" % "assertj-json" % "1.0.1" % "test"
 )
 
+javaOptions in Test += "-Dconfig.file=conf/application-test.conf"
+
+playEbeanDebugLevel := 4
 
 fork in run := true

@@ -5,7 +5,7 @@ create table todos (
   "item_id" VARCHAR(36) CONSTRAINT id_key PRIMARY KEY,
   "item_name" TEXT NOT NULL,
   "status" TEXT NOT NULL,
-  "due_date" CHAR(18) NOT NULL
+  "due_date" TIMESTAMP NOT NULL
 );
 
 # --- !Downs

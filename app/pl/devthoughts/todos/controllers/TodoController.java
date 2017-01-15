@@ -1,16 +1,11 @@
 package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import pl.devthoughts.todos.domain.TodoItem;
-import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
-import pl.devthoughts.todos.repository.TodoItemRepository;
-import play.Logger;
+import pl.devthoughts.todos.service.TodoService;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
-
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -18,98 +13,75 @@ import static javaslang.API.$;
 import static javaslang.API.Case;
 import static javaslang.API.Match;
 import static javaslang.Patterns.Failure;
+import static javaslang.Patterns.None;
+import static javaslang.Patterns.Some;
 import static javaslang.Patterns.Success;
-import static pl.devthoughts.todos.domain.TodoItem.from;
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
 
 public class TodoController extends Controller {
 
-    private static final Logger.ALogger LOGGER = Logger.of(TodoController.class);
-
-    private final TodoItemRepository repository;
+    private final TodoService todoService;
 
     @Inject
-    public TodoController(TodoItemRepository repository) {
-        this.repository = repository;
+    public TodoController(TodoService todoService) {
+        this.todoService = todoService;
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public Result addItem() {
         TodoItemRequest request = getRequest();
-        return repository.saveItem(from(request))
-            .onSuccess(itemId -> LOGGER.info("Item {} has been created with id {}", request.getName(), itemId.getId()))
-            .onFailure(ex -> LOGGER.warn("Cannot create a new item from request {}", request))
+        return todoService.saveItem(request)
             .toOption()
             .map(itemId -> created(toJson(itemId)))
             .getOrElse(notFound());
     }
 
     public Result getItem(String id) {
-        return withFoundItem
-            (id, (TodoItem it) -> {
-                    LOGGER.info("Returning item {}", id);
-                    return ok(toJson(it));
-                }
-            );
+        return todoService.findItem(id)
+            .transform(t -> Match(t).of(
+                Case(Some($()), item -> ok(toJson(item))),
+                Case(None(), () -> notFound())
+            ));
     }
 
     @BodyParser.Of(BodyParser.Json.class)
     public Result updateItem(String id) {
         final TodoItemRequest req = getRequest();
-        return withFoundItem
-            (id, (TodoItem it) -> {
-                    repository.updateItem(it.updateWith(req));
-                    LOGGER.info("Item {} has been updated", id);
-                    return ok();
-                }
-            );
+        return todoService.updateItem(id, req)
+            .transform(t -> Match(t).of(
+                Case(Success($()), item -> ok()),
+                Case(Failure($()), ex -> notFound())
+            ));
     }
 
     public Result deleteItem(String id) {
-        return withFoundItem
-            (id, (TodoItem it) -> {
-                    repository.removeItem(it);
-                    LOGGER.info("Item {} has been removed", id);
-                    return ok();
-                }
-            );
+        return todoService.deleteItem(id)
+            .transform(t -> Match(t).of(
+                Case(Success($()), item -> ok()),
+                Case(Failure($()), ex -> notFound())
+            ));
     }
 
     public Result done(String id) {
-        return withFoundItem
-            (id, (TodoItem it) -> {
-                    repository.finishItem(it);
-                    LOGGER.info("Item {} changed status to done", id);
-                    return ok();
-                }
-            );
+        return todoService.done(id)
+            .transform(t -> Match(t).of(
+                Case(Success($()), item -> ok()),
+                Case(Failure($()), ex -> notFound())
+            ));
     }
 
     public Result reopen(String id) {
-        return withFoundItem
-            (id, (TodoItem it) -> {
-                    repository.reopenItem(it);
-                    LOGGER.info("Item {} changed status to open", id);
-                    return ok();
-                }
-            );
+        return todoService.reopen(id)
+            .transform(t -> Match(t).of(
+                Case(Success($()), item -> ok()),
+                Case(Failure($()), ex -> notFound())
+            ));
     }
 
     public Result getAllItems() {
-        final TodoItems items = TodoItems.wrap(repository.findAllItems());
+        final TodoItems items = todoService.getAllItems();
         return ok(toJson(items));
-    }
-
-    private Result withFoundItem(String id, Function<TodoItem, Result> operation) {
-        return repository.findItem(new TodoItemId(id))
-            .transform(t -> Match(t).of(
-                Case(Success($()), operation),
-                Case(Failure($()), ex -> {
-                    LOGGER.warn("Cannot find an item with id {}", id);
-                    return notFound();
-                })
-            ));
     }
 
     private TodoItemRequest getRequest() {

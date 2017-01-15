@@ -5,6 +5,7 @@ import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 
 import java.util.Collection;
+import java.util.Date;
 
 public interface TodoItemRepository {
 
@@ -12,14 +13,14 @@ public interface TodoItemRepository {
 
     Try<TodoItem> findItem(TodoItemId id);
 
-    void updateItem(TodoItem item);
+    Try<TodoItem> updateItem(String itemId, String name, Date dueDate);
 
-    void removeItem(TodoItem item);
+    Try<TodoItem> removeItem(String itemId);
 
     Collection<TodoItem> findAllItems();
 
-    void finishItem(TodoItem it);
+    Try<TodoItem> finishItem(TodoItemId itemId);
 
-    void reopenItem(TodoItem it);
+    Try<TodoItem> reopenItem(TodoItemId itemId);
 
 }
