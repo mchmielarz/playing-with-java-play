@@ -36,7 +36,7 @@ public class TodoItemSqlRepositoryTest {
     }
 
     @Test
-    public void should_save_single_todo_item() {
+    public void should_save_a_single_todo() {
         final Date dueDate = new Date();
         final String name = "Do something";
 
