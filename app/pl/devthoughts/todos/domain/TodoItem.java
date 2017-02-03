@@ -6,6 +6,9 @@ import pl.devthoughts.todos.controllers.TodoItemRequest;
 import java.util.Date;
 import java.util.UUID;
 
+import static pl.devthoughts.todos.domain.TodoItemStatus.DONE;
+import static pl.devthoughts.todos.domain.TodoItemStatus.OPEN;
+
 public class TodoItem {
 
     private String id;
@@ -27,7 +30,7 @@ public class TodoItem {
         this();
         this.name = name;
         this.dueDate = dueDate;
-        this.status = TodoItemStatus.OPEN;
+        this.status = OPEN;
     }
 
     public TodoItem(String id, String name, Date dueDate, TodoItemStatus status) {
@@ -64,10 +67,18 @@ public class TodoItem {
     }
 
     public void done() {
-        this.status = TodoItemStatus.DONE;
+        this.status = DONE;
     }
 
     public void reopen() {
-        this.status = TodoItemStatus.OPEN;
+        this.status = OPEN;
+    }
+
+    public boolean isOpened() {
+        return OPEN == status;
+    }
+
+    public boolean isClosed() {
+        return DONE == status;
     }
 }
