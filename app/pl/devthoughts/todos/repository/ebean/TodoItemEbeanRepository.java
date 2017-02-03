@@ -38,8 +38,8 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> updateItem(String id, String name, Date dueDate) {
-        return find(id)
+    public Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate) {
+        return find(itemId.getId())
             .map(todo -> todo.withName(name))
             .map(todo -> todo.withDueDate(dueDate))
             .peek(todo -> todo.save())
@@ -47,8 +47,8 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> removeItem(String itemId) {
-        return find(itemId)
+    public Try<TodoItem> removeItem(TodoItemId itemId) {
+        return find(itemId.getId())
             .peek(todo -> todo.delete())
             .map(todo -> todo.asDomainItem());
     }

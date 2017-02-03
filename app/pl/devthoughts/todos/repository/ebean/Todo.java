@@ -10,8 +10,11 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import static javax.persistence.EnumType.STRING;
 
 @Entity
 @Table(name = "TODOS")
@@ -26,6 +29,7 @@ public class Todo extends Model {
     @Column(name = "item_name")
     private String name;
 
+    @Enumerated(STRING)
     private TodoItemStatus status;
 
     @Formats.DateTime(pattern = "yyyy-MM-dd'T'HH:mm")

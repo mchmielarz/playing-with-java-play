@@ -74,12 +74,12 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> updateItem(String itemId, String name, Date dueDate) {
+    public Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
     @Override
-    public Try<TodoItem> removeItem(String itemId) {
+    public Try<TodoItem> removeItem(TodoItemId itemId) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 

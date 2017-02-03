@@ -32,8 +32,8 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> updateItem(String itemId, String name, Date dueDate) {
-        return foundItem(itemId)
+    public Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate) {
+        return foundItem(itemId.getId())
             .map(item -> item.withName(name))
             .map(item -> item.withDueDate(dueDate))
             .peek(item -> map.put(item.getId(), item))
@@ -41,8 +41,8 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> removeItem(String itemId) {
-        return Try.of(() -> map.remove(itemId));
+    public Try<TodoItem> removeItem(TodoItemId itemId) {
+        return Try.of(() -> map.remove(itemId.getId()));
     }
 
     @Override

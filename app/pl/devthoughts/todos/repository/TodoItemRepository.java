@@ -13,9 +13,9 @@ public interface TodoItemRepository {
 
     Try<TodoItem> findItem(TodoItemId id);
 
-    Try<TodoItem> updateItem(String itemId, String name, Date dueDate);
+    Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate);
 
-    Try<TodoItem> removeItem(String itemId);
+    Try<TodoItem> removeItem(TodoItemId itemId);
 
     Collection<TodoItem> findAllItems();
 

@@ -35,4 +35,22 @@ public class TodoItemAssert extends AbstractAssert<TodoItemAssert, TodoItem> {
         }
         return this;
     }
+
+    public TodoItemAssert isOpened() {
+        isNotNull();
+        if (!actual.isOpened()) {
+            failWithMessage("Expected item to be opened but was closed");
+        }
+
+        return this;
+    }
+
+    public TodoItemAssert isClosed() {
+        isNotNull();
+        if (!actual.isClosed()) {
+            failWithMessage("Expected item to be closed but was opened");
+        }
+
+        return this;
+    }
 }
