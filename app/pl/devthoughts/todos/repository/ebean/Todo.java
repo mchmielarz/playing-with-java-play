@@ -62,16 +62,6 @@ public class Todo extends Model {
         return status;
     }
 
-    public Todo withName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public Todo withDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-        return this;
-    }
-
     public void done() {
         this.status = TodoItemStatus.DONE;
         save();
