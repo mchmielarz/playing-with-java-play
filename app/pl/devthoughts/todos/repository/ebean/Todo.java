@@ -35,10 +35,14 @@ public class Todo extends Model {
     @Formats.DateTime(pattern = "yyyy-MM-dd'T'HH:mm")
     private Date dueDate;
 
-    public Todo(String uuid, String name, Date dueDate, TodoItemStatus status) {
+    public Todo(String uuid, String name, Date dueDate) {
         this.uuid = uuid;
         this.name = name;
         this.dueDate = dueDate;
+    }
+
+    public Todo(String uuid, String name, Date dueDate, TodoItemStatus status) {
+        this(uuid, name, dueDate);
         this.status = status;
     }
 

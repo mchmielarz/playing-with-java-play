@@ -33,22 +33,24 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
 
     @Override
     public Try<TodoItem> findItem(TodoItemId itemId) {
-        return find(itemId.getId())
+        return find(() -> completeTodo(itemId.getId()))
             .map(item -> item.asDomainItem());
     }
 
     @Override
     public Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate) {
-        return find(itemId.getId())
-            .map(todo -> todo.withName(name))
-            .map(todo -> todo.withDueDate(dueDate))
-            .peek(todo -> todo.save())
+        return Try.of(() -> doesExist(itemId))
+            .map(b -> b ?
+                Try.success(b) :
+                Try.failure(new IllegalStateException("Todo with id " + itemId.getId() + " does not exist")))
+            .map(b -> new Todo(itemId.getId(), name, dueDate))
+            .peek(todo -> todo.update())
             .map(todo -> todo.asDomainItem());
     }
 
     @Override
     public Try<TodoItem> removeItem(TodoItemId itemId) {
-        return find(itemId.getId())
+        return find(() -> completeTodo(itemId.getId()))
             .peek(todo -> todo.delete())
             .map(todo -> todo.asDomainItem());
     }
@@ -64,34 +66,48 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
 
     @Override
     public Try<TodoItem> finishItem(TodoItemId itemId) {
-        return find(itemId.getId())
+        return find(() -> todoWithStatusOnly(itemId.getId()))
             .peek(todo -> todo.done())
             .map(todo -> todo.asDomainItem());
     }
 
     @Override
     public Try<TodoItem> reopenItem(TodoItemId itemId) {
-        return find(itemId.getId())
+        return find(() -> todoWithStatusOnly(itemId.getId()))
             .peek(todo -> todo.reopen())
             .map(todo -> todo.asDomainItem());
     }
 
-    private Try<Todo> find(String id) {
-        return Try.of(
-            () -> findSingleTodo(id)
-        )
+    private boolean doesExist(TodoItemId itemId) {
+        return countByUuid(itemId.getId()) > 0;
+    }
+
+    private int countByUuid(String uuid) {
+        return Todo.find.where().eq("uuid", uuid).findRowCount();
+    }
+
+    private Try<Todo> find(Try.CheckedSupplier<Option<Todo>> todoSupplier) {
+        return Try.of(todoSupplier)
             .transform(findResult -> Match(findResult).of(
                 Case(Success(Some($())), t -> t.toTry()),
                 Case(Success(None()), () -> Try.failure(
-                    new IllegalArgumentException("Unknown todo item id provided [" + id + "]"))
+                    new IllegalArgumentException("Unknown todo item id provided []"))
                 ),
                 Case(Failure($()), e -> Try.failure(e))
                 )
             );
     }
 
-    private Option<Todo> findSingleTodo(String id) {
+    private Option<Todo> completeTodo(String id) {
         return Option.of(Todo.find
+            .where()
+            .eq("uuid", id)
+            .findUnique());
+    }
+
+    private Option<Todo> todoWithStatusOnly(String id) {
+        return Option.of(Todo.find
+            .select("status")
             .where()
             .eq("uuid", id)
             .findUnique());

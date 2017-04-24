@@ -1,7 +1,9 @@
 package pl.devthoughts.todos.repository.ebean;
 
+import com.avaje.ebean.Ebean;
 import javaslang.control.Try;
 import org.jetbrains.annotations.NotNull;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import pl.devthoughts.todos.domain.TodoItem;
@@ -31,6 +33,11 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
         repository = app.injector().instanceOf(TodoItemEbeanRepository.class);
     }
 
+    @After
+    public void cleanup() {
+        Ebean.createSqlUpdate("DELETE FROM todos WHERE 1=1").execute();
+    }
+
     @Test
     public void should_save_a_single_todo() {
         final TodoItemId id = storeSingleItem(DO_SOMETHING);
@@ -55,7 +62,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
     }
 
     @Test
-    public void should_close_a_given_todo() {
+    public void should_close_given_todo() {
         final TodoItemId itemId = storeSingleItem(DO_SOMETHING);
 
         final Try<TodoItem> item = repository.finishItem(itemId);
@@ -65,7 +72,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
     }
 
     @Test
-    public void should_open_a_given_todo() {
+    public void should_open_given_todo() {
         final TodoItemId itemId = storeSingleItem(DO_SOMETHING);
 
         final Try<TodoItem> item = repository.reopenItem(itemId);
@@ -75,13 +82,26 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
     }
 
     @Test
-    public void should_remove_a_given_todo() {
+    public void should_remove_given_todo() {
         final TodoItemId itemId = storeSingleItem(DO_SOMETHING);
 
         final Try<TodoItem> item = repository.removeItem(itemId);
 
         assertTrue(item.isSuccess());
         assertTrue(repository.findItem(itemId).isFailure());
+    }
+
+    @Test
+    public void should_update_given_todo() {
+        final TodoItemId itemId = storeSingleItem(DO_SOMETHING);
+
+        final Date newDate = new Date();
+        final String newName = "something else";
+        final Try<TodoItem> item = repository.updateItem(itemId, newName, newDate);
+
+        assertTrue(item.isSuccess());
+        assertThat(item.get()).hasName(newName);
+        assertThat(item.get()).hasDueDate(newDate);
     }
 
     @NotNull
