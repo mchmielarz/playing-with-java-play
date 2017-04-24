@@ -27,7 +27,7 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
     @Override
     public Try<TodoItemId> saveItem(TodoItem item) {
         return Try.of(() -> Todo.from(item))
-            .peek(todo -> todo.save())
+            .peek(todo -> todo.insert())
             .map(todo -> new TodoItemId(todo.getUuid()));
     }
 
