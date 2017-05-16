@@ -76,7 +76,7 @@ public class Todo extends Model {
         return new TodoItem(getUuid(), getName(), getDueDate(), getStatus());
     }
 
-    public static Finder<Long, Todo> find = new Finder<>(Todo.class);
+    public static final Find<Long, Todo> find = new Finder<>(Todo.class);
 
     public static Todo from(TodoItem item) {
         return new Todo(item.getId(), item.getName(), item.getDueDate(), item.getStatus());
