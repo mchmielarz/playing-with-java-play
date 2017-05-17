@@ -1,7 +1,8 @@
 package pl.devthoughts.todos.repository.ebean;
 
-import javaslang.control.Option;
-import javaslang.control.Try;
+import io.vavr.CheckedFunction0;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.repository.TodoItemRepository;
@@ -11,14 +12,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
+import static io.vavr.Patterns.$Failure;
+import static io.vavr.Patterns.$None;
+import static io.vavr.Patterns.$Some;
+import static io.vavr.Patterns.$Success;
 import static java.util.stream.Collectors.toList;
-import static javaslang.API.$;
-import static javaslang.API.Case;
-import static javaslang.API.Match;
-import static javaslang.Patterns.Failure;
-import static javaslang.Patterns.None;
-import static javaslang.Patterns.Some;
-import static javaslang.Patterns.Success;
 
 public class TodoItemEbeanRepository implements TodoItemRepository {
 
@@ -86,14 +87,14 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
         return Todo.find.where().eq("uuid", uuid).findRowCount();
     }
 
-    private Try<Todo> find(Try.CheckedSupplier<Option<Todo>> todoSupplier) {
+    private Try<Todo> find(CheckedFunction0<Option<Todo>> todoSupplier) {
         return Try.of(todoSupplier)
             .transform(findResult -> Match(findResult).of(
-                Case(Success(Some($())), t -> t.toTry()),
-                Case(Success(None()), () -> Try.failure(
+                Case($Success($Some($())), t -> t.toTry()),
+                Case($Success($None()), () -> Try.failure(
                     new IllegalArgumentException("Unknown todo item id provided []"))
                 ),
-                Case(Failure($()), e -> Try.failure(e))
+                Case($Failure($()), e -> Try.failure(e))
                 )
             );
     }

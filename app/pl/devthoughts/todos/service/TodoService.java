@@ -1,8 +1,8 @@
 package pl.devthoughts.todos.service;
 
 import com.google.inject.Inject;
-import javaslang.control.Option;
-import javaslang.control.Try;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import org.jetbrains.annotations.NotNull;
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthoughts.todos.domain.TodoItem;

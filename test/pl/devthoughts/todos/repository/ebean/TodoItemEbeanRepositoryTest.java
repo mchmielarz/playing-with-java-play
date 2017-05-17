@@ -1,7 +1,7 @@
 package pl.devthoughts.todos.repository.ebean;
 
 import com.avaje.ebean.Ebean;
-import javaslang.control.Try;
+import io.vavr.control.Try;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;

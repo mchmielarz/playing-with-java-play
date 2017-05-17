@@ -9,13 +9,11 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 
-import static javaslang.API.$;
-import static javaslang.API.Case;
-import static javaslang.API.Match;
-import static javaslang.Patterns.Failure;
-import static javaslang.Patterns.None;
-import static javaslang.Patterns.Some;
-import static javaslang.Patterns.Success;
+import static io.vavr.API.*;
+import static io.vavr.Patterns.$Failure;
+import static io.vavr.Patterns.$None;
+import static io.vavr.Patterns.$Some;
+import static io.vavr.Patterns.$Success;
 import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
 
@@ -40,8 +38,8 @@ public class TodoController extends Controller {
     public Result getItem(String id) {
         return todoService.findItem(id)
             .transform(t -> Match(t).of(
-                Case(Some($()), item -> ok(toJson(item))),
-                Case(None(), () -> notFound())
+                Case($Some($()), item -> ok(toJson(item))),
+                Case($None(), () -> notFound())
             ));
     }
 
@@ -50,32 +48,32 @@ public class TodoController extends Controller {
         final TodoItemRequest req = getRequest();
         return todoService.updateItem(id, req)
             .transform(t -> Match(t).of(
-                Case(Success($()), item -> ok()),
-                Case(Failure($()), ex -> notFound())
+                Case($Success($()), item -> ok()),
+                Case($Failure($()), ex -> notFound())
             ));
     }
 
     public Result deleteItem(String id) {
         return todoService.deleteItem(id)
             .transform(t -> Match(t).of(
-                Case(Success($()), item -> ok()),
-                Case(Failure($()), ex -> notFound())
+                Case($Success($()), item -> ok()),
+                Case($Failure($()), ex -> notFound())
             ));
     }
 
     public Result done(String id) {
         return todoService.done(id)
             .transform(t -> Match(t).of(
-                Case(Success($()), item -> ok()),
-                Case(Failure($()), ex -> notFound())
+                Case($Success($()), item -> ok()),
+                Case($Failure($()), ex -> notFound())
             ));
     }
 
     public Result reopen(String id) {
         return todoService.reopen(id)
             .transform(t -> Match(t).of(
-                Case(Success($()), item -> ok()),
-                Case(Failure($()), ex -> notFound())
+                Case($Success($()), item -> ok()),
+                Case($Failure($()), ex -> notFound())
             ));
     }
 

@@ -1,6 +1,6 @@
 package pl.devthoughts.todos.repository;
 
-import javaslang.control.Try;
+import io.vavr.control.Try;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 

@@ -1,7 +1,7 @@
 package pl.devthoughts.todos.repository;
 
 import com.google.common.collect.ImmutableMap;
-import javaslang.control.Option;
+import io.vavr.control.Option;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,10 +40,10 @@ public class TodoItemSqlRepositoryTest {
         final Date dueDate = new Date();
         final String name = "Do something";
 
-        final Option<TodoItemId> itemId = repository.saveItem(new TodoItem(name, dueDate)).getOption();
+        final Option<TodoItemId> itemId = repository.saveItem(new TodoItem(name, dueDate)).toOption();
         assertThat(itemId.isDefined()).isEqualTo(true);
 
-        final Option<TodoItem> item = repository.findItem(itemId.get()).getOption();
+        final Option<TodoItem> item = repository.findItem(itemId.get()).toOption();
         assertThat(item.isDefined());
         assertThat(item.get())
             .hasName(name)

@@ -1,7 +1,7 @@
 package pl.devthoughts.todos.repository.hash;
 
-import javaslang.control.Option;
-import javaslang.control.Try;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.repository.TodoItemRepository;
