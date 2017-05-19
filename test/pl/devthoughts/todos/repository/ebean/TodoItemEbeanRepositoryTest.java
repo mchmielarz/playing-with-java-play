@@ -30,7 +30,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
 
     @Before
     public void setUp() {
-        repository = app.injector().instanceOf(TodoItemEbeanRepository.class);
+        repository = new TodoItemEbeanRepository();
     }
 
     @After
@@ -111,6 +111,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
         return id.get();
     }
 
+    @Override
     protected Application provideApplication() {
         return fakeApplication(inMemoryDatabase());
     }
