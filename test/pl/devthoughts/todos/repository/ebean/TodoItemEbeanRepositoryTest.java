@@ -4,7 +4,6 @@ import com.avaje.ebean.Ebean;
 import io.vavr.control.Try;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
@@ -26,12 +25,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
     private static final String PRINT_DOC = "print doc";
     private static final String DRAW_SKETCH = "draw sketch";
 
-    private TodoItemEbeanRepository repository;
-
-    @Before
-    public void setUp() {
-        repository = new TodoItemEbeanRepository();
-    }
+    private TodoItemEbeanRepository repository = new TodoItemEbeanRepository();
 
     @After
     public void cleanup() {
