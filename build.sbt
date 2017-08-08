@@ -4,9 +4,10 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.3"
 
 libraryDependencies ++= Seq(
+  guice,
   "io.vavr" % "vavr" % "0.9.0",
   "org.postgresql" % "postgresql" % "9.4.1211",
   "org.assertj" % "assertj-core" % "3.5.2" % "test",

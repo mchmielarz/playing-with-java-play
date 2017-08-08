@@ -1,10 +1,10 @@
 package pl.devthoughts.todos.repository.ebean;
 
-import com.avaje.ebean.Model;
+import io.ebean.Finder;
+import io.ebean.Model;
+
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemStatus;
-import play.data.format.Formats;
-import play.data.validation.Constraints;
 
 import java.util.Date;
 
@@ -13,6 +13,9 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import play.data.format.Formats;
+import play.data.validation.Constraints;
 
 import static javax.persistence.EnumType.STRING;
 
@@ -76,7 +79,7 @@ public class Todo extends Model {
         return new TodoItem(getUuid(), getName(), getDueDate(), getStatus());
     }
 
-    public static final Find<Long, Todo> find = new Finder<>(Todo.class);
+    public static final Finder<Long, Todo> find = new TodoFinder();
 
     public static Todo from(TodoItem item) {
         return new Todo(item.getId(), item.getName(), item.getDueDate(), item.getStatus());

@@ -3,14 +3,16 @@ package pl.devthoughts.todos.repository.ebean;
 import io.vavr.CheckedFunction0;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.repository.TodoItemRepository;
-import play.Logger;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+
+import play.Logger;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -58,7 +60,14 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
 
     @Override
     public Collection<TodoItem> findAllItems() {
-        return Try.of(() -> Todo.find.findList())
+        Option.none().toCharSeq();
+        Option.none().toArray();
+        Option.none().toPriorityQueue();
+        Option.none().toTree();
+        Option.none().toTry();
+        Option.none().iterator();
+
+        return Try.of(() -> Todo.find.all())
             .map(todos -> todos.stream().map(item -> item.asDomainItem()).collect(toList()))
             .onFailure(ex -> LOGGER.error("Cannot fetch todo items", ex))
             .onSuccess(items -> LOGGER.info("Number of todo item found: {}", items.size()))
@@ -84,7 +93,7 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
     }
 
     private int countByUuid(String uuid) {
-        return Todo.find.where().eq("uuid", uuid).findRowCount();
+        return Todo.find.query().where().eq("uuid", uuid).findCount();
     }
 
     private Try<Todo> find(CheckedFunction0<Option<Todo>> todoSupplier) {
@@ -101,6 +110,7 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
 
     private Option<Todo> completeTodo(String id) {
         return Option.of(Todo.find
+            .query()
             .where()
             .eq("uuid", id)
             .findUnique());
@@ -108,6 +118,7 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
 
     private Option<Todo> todoWithStatusOnly(String id) {
         return Option.of(Todo.find
+            .query()
             .select("status")
             .where()
             .eq("uuid", id)
