@@ -1,17 +1,20 @@
 package pl.devthoughts.todos.repository.ebean;
 
-import com.avaje.ebean.Ebean;
+import io.ebean.Ebean;
 import io.vavr.control.Try;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Test;
+
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
-import play.Application;
-import play.test.WithApplication;
 
 import java.util.Collection;
 import java.util.Date;
+
+import play.Application;
+import play.test.WithApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
