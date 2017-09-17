@@ -3,7 +3,16 @@ package pl.devthoughts.todos.routes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+
+import io.vavr.collection.HashMap;
+import io.vavr.collection.Map;
+
+import org.jetbrains.annotations.NotNull;
+import org.junit.Before;
 import org.junit.Test;
+
+import pl.devthoughts.todos.repository.TodoItemRepository;
+
 import play.libs.Json;
 import play.mvc.Http.RequestBuilder;
 import play.mvc.Result;
@@ -23,11 +32,16 @@ import static play.test.Helpers.route;
 
 public class RoutesTest extends WithApplication {
 
+    @Before
+    public void setUp() {
+        instanceOf(TodoItemRepository.class).removeAll();
+    }
+
     @Test
     public void should_create_single_todo_item() {
         Result creationResult = route(method(POST)
                                         .uri("/todos")
-                                        .bodyJson(itemData("Do something", "2016-12-04"))
+                                        .bodyJson(itemData("Do something", "2016-12-04  23:59"))
         );
 
         assertThat(creationResult.status()).isEqualTo(CREATED);
@@ -46,6 +60,47 @@ public class RoutesTest extends WithApplication {
     }
 
     @Test
+    public void should_create_multiple_todo_items_from_csv_request() {
+        Result creationResult = route(method(POST)
+            .uri("/todos/csv")
+            .bodyText(asCsv(items(
+                "Maybe yes", "2017-09-16 23:59",
+                "Or maybe no", "2017-09-16 23:59")))
+            .header("Content-Type", "text/csv")
+        );
+
+        assertThat(creationResult.status()).isEqualTo(CREATED);
+        final String[] createdIds = contentAsString(creationResult).split("\n");
+        assertThat(createdIds).hasSize(2);
+
+        Result findingResult = route(method(GET)
+            .uri("/todos/" + createdIds[0])
+        );
+
+        assertThat(findingResult.status()).isEqualTo(OK);
+        DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
+        assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Maybe yes");
+        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2017-09-16");
+        assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("OPEN");
+
+        Result findingResult2 = route(method(GET)
+            .uri("/todos/" + createdIds[1])
+        );
+
+        assertThat(findingResult2.status()).isEqualTo(OK);
+        DocumentContext findingCtx2 = JsonPath.parse(contentAsString(findingResult2));
+        assertThat(findingCtx2).jsonPathAsString("$.name").isEqualTo("Or maybe no");
+        assertThat(findingCtx2).jsonPathAsString("$.dueDate").isEqualTo("2017-09-16");
+        assertThat(findingCtx2).jsonPathAsString("$.status").isEqualTo("OPEN");
+    }
+
+    @NotNull
+    private Map<String, String> items(String name1, String dueDate1,
+                                      String name2, String dueDate2) {
+        return HashMap.of(name1, dueDate1, name2, dueDate2);
+    }
+
+    @Test
     public void should_not_found_todo_item_for_unknown_id() {
         Result result = route(method(GET)
                                 .uri("/todos/unknown-id-3"));
@@ -56,13 +111,13 @@ public class RoutesTest extends WithApplication {
     public void should_update_todo_item_with_new_data() {
         Result creationResult = route(method(POST)
                                         .uri("/todos")
-                                        .bodyJson(itemData("Do something", "2016-12-04"))
+                                        .bodyJson(itemData("Do something", "2016-12-04 23:59"))
         );
         String itemId = itemId(creationResult);
 
         Result updateResult = route(method(PUT)
                                     .uri("/todos/" + itemId)
-                                    .bodyJson(itemData("Do nothing", "2016-12-25")));
+                                    .bodyJson(itemData("Do nothing", "2016-12-25 23:59")));
         assertThat(updateResult.status()).isEqualTo(OK);
 
         Result findingResult = route(method(GET)
@@ -78,7 +133,7 @@ public class RoutesTest extends WithApplication {
     public void should_not_update_todo_item_for_unknown_id() {
         Result result = route(method(PUT)
                                 .uri("/todos/unknown-id-1")
-                                .bodyJson(itemData("Do nothing", "2016-12-25")));
+                                .bodyJson(itemData("Do nothing", "2016-12-25 23:59")));
         assertThat(result.status()).isEqualTo(NOT_FOUND);
     }
 
@@ -93,7 +148,7 @@ public class RoutesTest extends WithApplication {
     public void should_remove_todo_item() {
         Result creationResult = route(method(POST)
                                         .uri("/todos")
-                                        .bodyJson(itemData("Do something", "2016-12-04"))
+                                        .bodyJson(itemData("Do something", "2016-12-04 23:59"))
         );
         String itemId = itemId(creationResult);
 
@@ -109,11 +164,11 @@ public class RoutesTest extends WithApplication {
     public void should_find_all_todo_items() {
         route(method(POST)
             .uri("/todos")
-            .bodyJson(itemData("Do something", "2016-12-04"))
+            .bodyJson(itemData("Do something", "2016-12-04 23:59"))
         );
         route(method(POST)
             .uri("/todos")
-            .bodyJson(itemData("Send email", "2016-10-04"))
+            .bodyJson(itemData("Send email", "2016-10-04 23:59"))
         );
 
         Result result = route(method(GET)
@@ -130,7 +185,7 @@ public class RoutesTest extends WithApplication {
     public void should_mark_todo_item_as_done() {
         Result creationResult = route(method(POST)
                                         .uri("/todos")
-                                        .bodyJson(itemData("Do something", "2016-12-04"))
+                                        .bodyJson(itemData("Do something", "2016-12-04 23:59"))
         );
         String itemId = itemId(creationResult);
 
@@ -155,7 +210,7 @@ public class RoutesTest extends WithApplication {
     public void should_mark_todo_item_as_open() {
         Result creationResult = route(method(POST)
                                         .uri("/todos")
-                                        .bodyJson(itemData("Do something", "2016-12-04"))
+                                        .bodyJson(itemData("Do something", "2016-12-04 23:59"))
         );
         String itemId = itemId(creationResult);
 
@@ -181,6 +236,12 @@ public class RoutesTest extends WithApplication {
         return Json.newObject()
             .put("name", name)
             .put("dueDate", dueDate);
+    }
+
+    private String asCsv(Map<String, String> items) {
+        return items.map(t -> t._1 + "," + t._2)
+            .map(val -> val + '\n')
+            .fold("", (acc, val) -> acc + val);
     }
 
     private Result markItem(String itemId, String status) {

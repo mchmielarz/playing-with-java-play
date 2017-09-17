@@ -59,6 +59,11 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
     }
 
     @Override
+    public void removeAll() {
+        Todo.find.all().stream().forEach(todo -> todo.delete());
+    }
+
+    @Override
     public Collection<TodoItem> findAllItems() {
         Option.none().toCharSeq();
         Option.none().toArray();
@@ -124,5 +129,4 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
             .eq("uuid", id)
             .findUnique());
     }
-
 }

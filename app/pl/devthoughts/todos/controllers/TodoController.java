@@ -1,15 +1,23 @@
 package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import pl.devthoughts.todos.domain.TodoItems;
+import pl.devthoughts.todos.modules.CsvBodyParser;
 import pl.devthoughts.todos.service.TodoService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import javax.inject.Inject;
-
-import static io.vavr.API.*;
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
+import static io.vavr.API.Match;
 import static io.vavr.Patterns.$Failure;
 import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
@@ -30,9 +38,19 @@ public class TodoController extends Controller {
     public Result addItem() {
         TodoItemRequest request = getRequest();
         return todoService.saveItem(request)
-            .toOption()
             .map(itemId -> created(toJson(itemId)))
-            .getOrElse(notFound());
+            .getOrElse(internalServerError());
+    }
+
+    @BodyParser.Of(CsvBodyParser.class)
+    public Result addItems() {
+        final List<TodoItemRequest> list = request().body().as(List.class);
+        final String createdIds = list.stream()
+            .map(req -> todoService.saveItem(req))
+            .flatMap(optId -> optId.toJavaStream())
+            .map(id -> id.getId())
+            .collect(Collectors.joining("\n"));
+        return created(createdIds);
     }
 
     public Result getItem(String id) {
@@ -86,5 +104,4 @@ public class TodoController extends Controller {
         JsonNode json = request().body().asJson();
         return fromJson(json, TodoItemRequest.class);
     }
-
 }

@@ -23,4 +23,5 @@ public interface TodoItemRepository {
 
     Try<TodoItem> reopenItem(TodoItemId itemId);
 
+    void removeAll();
 }

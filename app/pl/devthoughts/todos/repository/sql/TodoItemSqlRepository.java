@@ -1,12 +1,11 @@
 package pl.devthoughts.todos.repository.sql;
 
 import io.vavr.control.Try;
+
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItemStatus;
 import pl.devthoughts.todos.repository.TodoItemRepository;
-import play.db.Database;
-import play.db.NamedDatabase;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,6 +17,9 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.inject.Inject;
+
+import play.db.Database;
+import play.db.NamedDatabase;
 
 public class TodoItemSqlRepository implements TodoItemRepository {
 
@@ -80,6 +82,11 @@ public class TodoItemSqlRepository implements TodoItemRepository {
 
     @Override
     public Try<TodoItem> removeItem(TodoItemId itemId) {
+        throw new UnsupportedOperationException("Guess what? It's not implemented!");
+    }
+
+    @Override
+    public void removeAll() {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 

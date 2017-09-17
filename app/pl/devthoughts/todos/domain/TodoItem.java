@@ -1,6 +1,7 @@
 package pl.devthoughts.todos.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 
 import java.util.Date;

@@ -14,11 +14,7 @@ import static com.google.common.collect.Maps.newHashMap;
 
 public class TodoItemHashMapRepository implements TodoItemRepository {
 
-    private final Map<String, TodoItem> map;
-
-    public TodoItemHashMapRepository() {
-        map = newHashMap();
-    }
+    private final Map<String, TodoItem> map = newHashMap();
 
     @Override
     public Try<TodoItemId> saveItem(TodoItem item) {
@@ -43,6 +39,11 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     @Override
     public Try<TodoItem> removeItem(TodoItemId itemId) {
         return Try.of(() -> map.remove(itemId.getId()));
+    }
+
+    @Override
+    public void removeAll() {
+        map.clear();
     }
 
     @Override
