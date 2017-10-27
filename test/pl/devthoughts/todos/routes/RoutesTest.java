@@ -3,6 +3,7 @@ package pl.devthoughts.todos.routes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.typesafe.config.ConfigFactory;
 
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
@@ -13,6 +14,9 @@ import org.junit.Test;
 
 import pl.devthoughts.todos.repository.TodoItemRepository;
 
+import play.Application;
+import play.Mode;
+import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Http.RequestBuilder;
 import play.mvc.Result;
@@ -57,10 +61,10 @@ public class RoutesTest extends WithApplication {
     @Test
     public void should_create_multiple_todo_items_from_csv_request() {
         Result creationResult = route(app, method(POST)
-            .uri("/todos/csv")
+            .uri("/csv/todos")
             .bodyText(asCsv(items(
-                "Maybe yes", "2017-09-16 23:59",
-                "Or maybe no", "2017-09-16 23:59")))
+                "Write an essay", "2017-09-16 23:59",
+                "Replace a bulb", "2017-09-16 23:59")))
             .header("Content-Type", "text/csv")
         );
 
@@ -72,7 +76,7 @@ public class RoutesTest extends WithApplication {
 
         assertThat(findingResult.status()).isEqualTo(OK);
         DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
-        assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Maybe yes");
+        assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Write an essay");
         assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2017-09-16");
         assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("OPEN");
 
@@ -80,7 +84,7 @@ public class RoutesTest extends WithApplication {
 
         assertThat(findingResult2.status()).isEqualTo(OK);
         DocumentContext findingCtx2 = JsonPath.parse(contentAsString(findingResult2));
-        assertThat(findingCtx2).jsonPathAsString("$.name").isEqualTo("Or maybe no");
+        assertThat(findingCtx2).jsonPathAsString("$.name").isEqualTo("Replace a bulb");
         assertThat(findingCtx2).jsonPathAsString("$.dueDate").isEqualTo("2017-09-16");
         assertThat(findingCtx2).jsonPathAsString("$.status").isEqualTo("OPEN");
     }
@@ -224,7 +228,7 @@ public class RoutesTest extends WithApplication {
     private String asCsv(Map<String, String> items) {
         return items.map(t -> t._1 + "," + t._2)
             .map(val -> val + '\n')
-            .fold("", (acc, val) -> acc + val);
+            .fold("name,dueDate\n", (acc, val) -> acc + val);
     }
 
     private Result markItem(String itemId, String status) {
@@ -243,4 +247,11 @@ public class RoutesTest extends WithApplication {
         return new RequestBuilder().method(method);
     }
 
+    @Override
+    protected Application provideApplication() {
+        return new GuiceApplicationBuilder()
+            .withConfigLoader(env -> ConfigFactory.load("application-test.conf"))
+            .in(Mode.TEST)
+            .build();
+    }
 }

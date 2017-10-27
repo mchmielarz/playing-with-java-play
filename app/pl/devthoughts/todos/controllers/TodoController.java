@@ -3,11 +3,7 @@ package pl.devthoughts.todos.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import pl.devthoughts.todos.domain.TodoItems;
-import pl.devthoughts.todos.modules.CsvBodyParser;
 import pl.devthoughts.todos.service.TodoService;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -40,17 +36,6 @@ public class TodoController extends Controller {
         return todoService.saveItem(request)
             .map(itemId -> created(toJson(itemId)))
             .getOrElse(internalServerError());
-    }
-
-    @BodyParser.Of(CsvBodyParser.class)
-    public Result addItems() {
-        final List<TodoItemRequest> list = request().body().as(List.class);
-        final String createdIds = list.stream()
-            .map(req -> todoService.saveItem(req))
-            .flatMap(optId -> optId.toJavaStream())
-            .map(id -> id.getId())
-            .collect(Collectors.joining("\n"));
-        return created(createdIds);
     }
 
     public Result getItem(String id) {

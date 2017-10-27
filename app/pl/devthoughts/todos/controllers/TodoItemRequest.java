@@ -1,20 +1,30 @@
 package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.opencsv.bean.CsvBindByPosition;
+import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
 
 import java.util.Date;
 
 public class TodoItemRequest {
 
-    @CsvBindByPosition(position = 0)
+    public static final String DUE_DATE_FORMAT = "yyyy-MM-dd HH:mm";
+
+    @CsvBindByName(column = "name")
     private String name;
-    @CsvBindByPosition(position = 1)
-    @CsvDate(value = "yyyy-MM-dd HH:mm")
-    @JsonFormat
-        (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+
+    @CsvBindByName(column = "dueDate")
+    @CsvDate(value = DUE_DATE_FORMAT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DUE_DATE_FORMAT)
     private Date dueDate;
+
+    public TodoItemRequest() {}
+
+    public TodoItemRequest(String name, Date dueDate) {
+        this();
+        this.name = name;
+        this.dueDate = dueDate;
+    }
 
     public String getName() {
         return name;
