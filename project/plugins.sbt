@@ -17,3 +17,5 @@ addSbtPlugin("org.irundaia.sbt" % "sbt-sassify" % "1.4.2")
 addSbtPlugin("com.typesafe.sbt" % "sbt-play-enhancer" % "1.2.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-play-ebean" % "4.0.2")
+
+addSbtPlugin("com.github.gseitz" % "sbt-protobuf" % "0.6.3")

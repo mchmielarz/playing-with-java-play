@@ -12,3 +12,5 @@ POST          /todos/:id/done        pl.devthoughts.todos.controllers.TodoContro
 POST          /todos/:id/open        pl.devthoughts.todos.controllers.TodoController.reopen(id: String)
 
 POST          /csv/todos             pl.devthoughts.todos.controllers.CsvTodoController.addItems()
+
+POST          /proto/todos           pl.devthoughts.todos.controllers.ProtobufTodoController.addItem()
