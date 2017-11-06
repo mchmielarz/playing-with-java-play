@@ -10,10 +10,10 @@ public class TodoItemRequest {
 
     public static final String DUE_DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
-    @CsvBindByName(column = "name")
+    @CsvBindByName(column = "name", required = true)
     private String name;
 
-    @CsvBindByName(column = "dueDate")
+    @CsvBindByName(column = "dueDate", required = true)
     @CsvDate(value = DUE_DATE_FORMAT)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DUE_DATE_FORMAT)
     private Date dueDate;

@@ -10,7 +10,7 @@ import static pl.devthoughts.todos.repository.sql.TodoItemSqlRepository.DATE_FOR
 
 public class TodoItemAssert extends AbstractAssert<TodoItemAssert, TodoItem> {
 
-    public TodoItemAssert(TodoItem actual) {
+    TodoItemAssert(TodoItem actual) {
         super(actual, TodoItemAssert.class);
     }
 

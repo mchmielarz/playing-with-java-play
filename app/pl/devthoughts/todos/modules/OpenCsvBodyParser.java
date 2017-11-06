@@ -5,8 +5,10 @@ import akka.util.ByteString;
 import com.google.inject.Inject;
 import com.opencsv.bean.CsvToBeanBuilder;
 
+import io.vavr.control.Either;
+import io.vavr.control.Option;
+
 import pl.devthoughts.todos.controllers.TodoItemRequest;
-import pl.devthoughts.todos.domain.TodoItem;
 
 import java.io.StringReader;
 import java.util.List;
@@ -16,27 +18,47 @@ import play.http.HttpErrorHandler;
 import play.mvc.BodyParser;
 import play.mvc.Http;
 
-public class OpenCsvBodyParser extends BodyParser.BufferingBodyParser<List<TodoItem>> {
+public class OpenCsvBodyParser extends BodyParser.BufferingBodyParser<List<TodoItemRequest>> {
+
+    private static final String ERR_MSG_PREFIX = "Error decoding CSV body";
+
+    static final String NON_CSV_MIME_TYPE_ERR_MSG = "Expected text/csv content type.";
+    static final String NO_BODY_ERR_MSG = "Request has no body";
+    static final String TEXT_CSV_MIME_TYPE = "text/csv";
 
     @Inject
     protected OpenCsvBodyParser(ParserConfiguration config, HttpErrorHandler errorHandler) {
-        super(config.maxMemoryBuffer(), errorHandler, "Error decoding csv body");
+        super(config.maxMemoryBuffer(), errorHandler, ERR_MSG_PREFIX);
     }
 
     @Override
-    protected List<TodoItem> parse(Http.RequestHeader request, ByteString bytes)
+    protected List<TodoItemRequest> parse(Http.RequestHeader request, ByteString bytes)
         throws Exception {
-        request.contentType()
-            .filter(ct -> "text/csv".equalsIgnoreCase(ct))
-            .orElseThrow(() -> new IllegalArgumentException("Expected text/csv content type."));
+        return hasCsvMimeType(request)
+            .flatMap(ct -> hasBody(request))
+            .map(withBody -> doParse(bytes))
+            .getOrElseThrow(errMessage -> {
+                throw new IllegalArgumentException(errMessage);
+            });
+    }
 
-        if (request.hasBody()) {
-            final String body = bytes.utf8String();
-            return (List<TodoItem>) new CsvToBeanBuilder(new StringReader(body)).withType(TodoItemRequest.class).build()
-                .parse();
-        } else {
-            throw new IllegalStateException("Request has no body");
-        }
+    private Either<String, String> hasCsvMimeType(Http.RequestHeader request) {
+        return Option.ofOptional(request.contentType())
+            .filter(TEXT_CSV_MIME_TYPE::equalsIgnoreCase)
+            .toEither(NON_CSV_MIME_TYPE_ERR_MSG);
+    }
+
+    private Either<String, Boolean> hasBody(Http.RequestHeader request) {
+        return request.hasBody() ? Either.right(true) : Either.left(NO_BODY_ERR_MSG);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<TodoItemRequest> doParse(ByteString bytes) {
+        return new CsvToBeanBuilder(new StringReader(bytes.utf8String()))
+            .withType(TodoItemRequest.class)
+            .withThrowExceptions(true)
+            .build()
+            .parse();
     }
 
 }

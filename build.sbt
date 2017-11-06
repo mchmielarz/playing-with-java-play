@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.4.1211",
   "com.opencsv" % "opencsv" % "4.0",
   "org.assertj" % "assertj-core" % "3.5.2" % "test",
-  "com.revinate" % "assertj-json" % "1.0.1" % "test"
+  "com.revinate" % "assertj-json" % "1.0.1" % "test",
+  "com.h2database" % "h2" % "1.4.192" % "test"
 )
 
 javaOptions in Test += "-Dconfig.file=conf/application-test.conf"
