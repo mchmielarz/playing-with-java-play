@@ -188,7 +188,7 @@ public class RoutesTest extends WithApplication {
         RequestBuilder request = new RequestBuilder()
             .method(POST)
             .uri("/todos/" + itemId + "/" + status);
-        return route(request);
+        return route(app, request);
     }
 
     private String itemId(Result result) {

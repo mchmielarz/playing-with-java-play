@@ -1,3 +1,5 @@
+resolvers += "jcenter" at "https://jcenter.bintray.com"
+
 name := """playing-with-java-play"""
 
 version := "1.0-SNAPSHOT"
@@ -12,8 +14,10 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.4.1211",
   "com.opencsv" % "opencsv" % "4.0",
   "com.google.protobuf" % "protobuf-java-util" % "3.4.0",
+  "com.typesafe.akka" %% "akka-testkit" % "2.5.3" % "test",
   "org.assertj" % "assertj-core" % "3.5.2" % "test",
   "com.revinate" % "assertj-json" % "1.0.1" % "test",
+  "org.mockito" % "mockito-core" % "2.12.0" % "test",
   "com.h2database" % "h2" % "1.4.192" % "test"
 )
 

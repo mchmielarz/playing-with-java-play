@@ -1,7 +1,7 @@
 package pl.devthoughts.todos.controllers;
 
 import pl.devthoughts.todos.domain.TodoItemId;
-import pl.devthoughts.todos.modules.TodoItemRequestProtobufParser;
+import pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser;
 import pl.devthoughts.todos.service.TodoService;
 import pl.devthougths.todos.ProtobufTodoItem;
 
@@ -11,7 +11,7 @@ import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import static pl.devthoughts.todos.modules.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
+import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
 
 public class ProtobufTodoController extends Controller {
 
@@ -32,7 +32,7 @@ public class ProtobufTodoController extends Controller {
     }
 
     private byte[] asProtobufContent(TodoItemId itemId) {
-        return ProtobufTodoItem.TodoItemResponse.newBuilder().setId(itemId.getId()).build()
+        return ProtobufTodoItem.CreateItemResponse.newBuilder().setId(itemId.getId()).build()
             .toByteArray();
     }
 

@@ -1,4 +1,4 @@
-package pl.devthoughts.todos.modules;
+package pl.devthoughts.todos.modules.protobuf;
 
 import akka.util.ByteString;
 
@@ -55,7 +55,7 @@ public class TodoItemRequestProtobufParser extends BodyParser.BufferingBodyParse
     }
 
     private Either<String, TodoItemRequest> doParse(ByteString bytes) {
-        return Try.of(() -> ProtobufTodoItem.TodoItemRequest.parseFrom(bytes.toArray()))
+        return Try.of(() -> ProtobufTodoItem.CreateItemRequest.parseFrom(bytes.toArray()))
             .map(req -> new TodoItemRequest(req.getName(), asDate(req.getDueDate())))
             .toEither()
             .mapLeft(Throwable::getMessage);
