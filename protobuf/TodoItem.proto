@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package todos;
+
+option java_package = "pl.devthougths.todos";
+option java_outer_classname = "ProtobufTodoItem";
+
+import "google/protobuf/timestamp.proto";
+
+message CreateItemRequest {
+  string name = 1;
+  google.protobuf.Timestamp dueDate = 2;
+}
+
+message CreateItemResponse {
+    string id = 1;
+}
