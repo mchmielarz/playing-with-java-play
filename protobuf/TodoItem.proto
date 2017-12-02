@@ -15,3 +15,19 @@ message CreateItemRequest {
 message CreateItemResponse {
     string id = 1;
 }
+
+message FetchItemsRequest {
+    repeated string id = 1;
+}
+
+message FetchItemsResponse {
+
+    message Item {
+        string id = 1;
+        string name = 2;
+        google.protobuf.Timestamp dueDate = 3;
+        string status = 4;
+    }
+
+    repeated Item item = 1;
+}

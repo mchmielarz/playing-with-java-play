@@ -70,7 +70,7 @@ public class TodoItemRequestProtobufParserTest {
         final byte[] todoItemAsBytes = ProtobufTodoItem.CreateItemRequest
             .newBuilder()
             .setName("Do something")
-            .setDueDate(Timestamp.newBuilder().setSeconds(getSecondsFor("2017-09-16 23:59")))
+            .setDueDate(asTimestamp("2017-09-16 23:59"))
             .build().toByteArray();
         ByteString bodyContent = ByteString.fromArray(todoItemAsBytes);
 
@@ -87,19 +87,23 @@ public class TodoItemRequestProtobufParserTest {
             .hasDueDate(fromString("2017-09-16 23:59"));
     }
 
-    private long getSecondsFor(String date) {
+    private Timestamp.Builder asTimestamp(String dueDate) {
+        return Timestamp.newBuilder().setSeconds(asSeconds(dueDate));
+    }
+
+    private long asSeconds(String date) {
         final LocalDateTime ldt = LocalDateTime.parse(date, FORMATTER);
         return ldt.atZone(ZoneId.systemDefault()).toEpochSecond();
     }
 
     @NotNull
-    private TodoItemRequestProtobufParser bodyParser() {
-        return new TodoItemRequestProtobufParser(PARSER_CONFIGURATION, new DummyErrorHandler());
+    private LocalDateTime fromString(String date) {
+        return LocalDateTime.parse(date, FORMATTER);
     }
 
     @NotNull
-    private LocalDateTime fromString(String date) {
-        return LocalDateTime.parse(date, FORMATTER);
+    private TodoItemRequestProtobufParser bodyParser() {
+        return new TodoItemRequestProtobufParser(PARSER_CONFIGURATION, new DummyErrorHandler());
     }
 
     @NotNull

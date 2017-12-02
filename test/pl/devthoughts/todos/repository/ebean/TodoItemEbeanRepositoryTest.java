@@ -75,7 +75,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
         final Try<TodoItem> item = repository.reopenItem(itemId);
 
         assertTrue(item.isSuccess());
-        assertThat(item.get()).isOpened();
+        assertThat(item.get()).isOpen();
     }
 
     @Test

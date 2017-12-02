@@ -4,12 +4,14 @@ import akka.util.ByteString;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Timestamp;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.revinate.assertj.json.JsonPathAssert;
 import com.typesafe.config.ConfigFactory;
 
+import io.vavr.collection.List;
+import io.vavr.control.Try;
+
+import org.assertj.core.groups.Tuple;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import pl.devthoughts.todos.repository.TodoItemRepository;
@@ -21,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
 import play.Application;
+import play.Logger;
 import play.Mode;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.mvc.Http;
@@ -30,15 +33,15 @@ import play.test.WithApplication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static pl.devthoughts.todos.controllers.TodoItemRequest.DUE_DATE_FORMAT;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
-import static play.test.Helpers.CREATED;
+import static play.mvc.Http.Status.CREATED;
 import static play.test.Helpers.GET;
 import static play.test.Helpers.OK;
 import static play.test.Helpers.POST;
-import static play.test.Helpers.contentAsString;
 import static play.test.Helpers.route;
 
 public class ProtobufRoutesTest extends WithApplication {
 
+    private static final Logger.ALogger LOGGER = Logger.of(ProtobufRoutesTest.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DUE_DATE_FORMAT);
 
     @Before
@@ -46,31 +49,91 @@ public class ProtobufRoutesTest extends WithApplication {
         instanceOf(TodoItemRepository.class).removeAll();
     }
 
+    @Ignore
     @Test
-    public void should_create_single_todo_item()
+    public void should_create_todo_items_with_protobuf()
         throws InvalidProtocolBufferException, ExecutionException, InterruptedException {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04 23:59"));
-        assertThat(creationResult.status()).isEqualTo(CREATED);
+        // given
+        final List<ByteString> itemsData = List.of(
+            newItemData("Do something", "2016-12-04 23:59"),
+            newItemData("Time for rest!", "2016-12-05 23:59")
+        );
 
-        final ProtobufTodoItem.CreateItemResponse response =
-            extractCreateItemResponse(creationResult);
-        assertThat(response.getId()).isNotEmpty();
+        // when
+        final Try<List<Result>> confirmedCreation = Try.of(() -> itemsData)
+            .mapTry(this::createItems)
+            .mapTry(this::assertCreated);
 
-        Result findingResult = findSingleItem(response.getId());
+        // then
+        final ProtobufTodoItem.FetchItemsRequest fetchItemsRequest = confirmedCreation
+            .map(this::extractCreationResponses)
+            .map(this::extractItemIds)
+            .map(this::asFetchItemsRequest)
+            .onFailure(ex -> LOGGER.error("Cannot create request to fetch multiple items", ex))
+            .get();
 
-        assertThat(findingResult.status()).isEqualTo(OK);
-        DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
-        JsonPathAssert.assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Do something");
-        JsonPathAssert.assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04");
-        JsonPathAssert.assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("OPEN");
+        final ByteString multipleIds = ByteString.fromArray(fetchItemsRequest.toByteArray());
+        final Result result = findItems(multipleIds);
+        assertThat(result.status()).isEqualTo(OK);
+
+        ProtobufTodoItem.FetchItemsResponse resp = extractFetchItemsResponse(result);
+        assertThat(resp.getItemList()).hasSize(2);
+        assertThat(resp.getItemList())
+            .extracting("name", "dueDate", "status")
+            .contains(
+                Tuple.tuple("Do something", asTimestamp("2016-12-04 23:59"), "OPEN"),
+                Tuple.tuple("Time for rest!", asTimestamp("2016-12-05 23:59"), "OPEN")
+            );
     }
 
-    private ProtobufTodoItem.CreateItemResponse extractCreateItemResponse(Result creationResult)
-        throws InterruptedException, ExecutionException,
-        InvalidProtocolBufferException {
-        final ByteString bytes =
-            creationResult.body().consumeData(mat).toCompletableFuture().get();
-        return ProtobufTodoItem.CreateItemResponse.parseFrom(bytes.toArray());
+    private ProtobufTodoItem.FetchItemsResponse.Item item(String name, String dueDate, String status) {
+        return ProtobufTodoItem.FetchItemsResponse.Item.newBuilder()
+            .setName(name)
+            .setDueDate(asTimestamp(dueDate))
+            .setStatus(status)
+            .build();
+    }
+
+    private ProtobufTodoItem.FetchItemsResponse extractFetchItemsResponse(Result result) {
+        try {
+            final ByteString bytes = result.body().consumeData(mat).toCompletableFuture().get();
+            return ProtobufTodoItem.FetchItemsResponse.parseFrom(bytes.toArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("Cannot extract CreateItemResponse from call result.", e);
+        }
+    }
+
+    private ProtobufTodoItem.FetchItemsRequest asFetchItemsRequest(List<String> ids) {
+        return
+            ProtobufTodoItem.FetchItemsRequest.newBuilder()
+            .addAllId(ids)
+            .build();
+    }
+
+    private List<String> extractItemIds(List<ProtobufTodoItem.CreateItemResponse> creationResponses) {
+        return creationResponses.map(ProtobufTodoItem.CreateItemResponse::getId);
+    }
+
+    private List<ProtobufTodoItem.CreateItemResponse> extractCreationResponses(List<Result> results) {
+        return results.map(this::extractCreateItemResponse);
+    }
+
+    private List<Result> assertCreated(List<Result> results) {
+        results.forEach(result -> assertThat(result.status()).isEqualTo(CREATED));
+        return results;
+    }
+
+    private List<Result> createItems(List<ByteString> itemsData) {
+        return itemsData.map(this::createItem);
+    }
+
+    private ProtobufTodoItem.CreateItemResponse extractCreateItemResponse(Result creationResult) {
+        try {
+            final ByteString bytes = creationResult.body().consumeData(mat).toCompletableFuture().get();
+            return ProtobufTodoItem.CreateItemResponse.parseFrom(bytes.toArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("Cannot extract CreateItemResponse from call result.", e);
+        }
     }
 
     private Result createItem(ByteString itemData) {
@@ -81,20 +144,28 @@ public class ProtobufRoutesTest extends WithApplication {
                 .header("Content-Type", PROTOBUF_MIME_TYPE));
     }
 
-    private Result findSingleItem(String itemId) {
-        return route(app, method(GET).uri("/todos/" + itemId));
+    private Result findItems(ByteString ids) {
+        return route(app,
+            method(GET)
+                .uri("/proto/todos")
+                .bodyRaw(ids)
+                .header("Content-Type", PROTOBUF_MIME_TYPE));
     }
 
-    private ByteString itemData(String name, String dueDate) {
+    private ByteString newItemData(String name, String dueDate) {
         final byte[] todoItemAsBytes = ProtobufTodoItem.CreateItemRequest
             .newBuilder()
             .setName(name)
-            .setDueDate(Timestamp.newBuilder().setSeconds(getSecondsFor(dueDate)))
+            .setDueDate(asTimestamp(dueDate))
             .build().toByteArray();
         return ByteString.fromArray(todoItemAsBytes);
     }
 
-    private long getSecondsFor(String date) {
+    private Timestamp asTimestamp(String dueDate) {
+        return Timestamp.newBuilder().setSeconds(asSeconds(dueDate)).build();
+    }
+
+    private long asSeconds(String date) {
         final LocalDateTime ldt = LocalDateTime.parse(date, FORMATTER);
         return ldt.atZone(ZoneId.systemDefault()).toEpochSecond();
     }
