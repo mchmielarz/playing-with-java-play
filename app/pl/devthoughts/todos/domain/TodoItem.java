@@ -2,6 +2,7 @@ package pl.devthoughts.todos.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import pl.devthoughts.todos.TodosConfig;
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public class TodoItem {
     private String name;
     private TodoItemStatus status;
     @JsonFormat
-        (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        (shape = JsonFormat.Shape.STRING, pattern = TodosConfig.DUE_DATE_FORMAT)
     private LocalDateTime dueDate;
 
     static public TodoItem from(TodoItemRequest req) {

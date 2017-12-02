@@ -39,7 +39,7 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_create_single_todo_item() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04 23:59"));
+        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
 
         assertThat(creationResult.status()).isEqualTo(CREATED);
         DocumentContext creationCtx = JsonPath.parse(contentAsString(creationResult));
@@ -50,7 +50,7 @@ public class RoutesTest extends WithApplication {
         assertThat(findingResult.status()).isEqualTo(OK);
         DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
         assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Do something");
-        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04");
+        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04T23:59:00");
         assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("OPEN");
     }
 
@@ -62,10 +62,10 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_update_todo_item_with_new_data() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04 23:59"));
+        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
-        Result updateResult = editItem(itemId, itemData("Do nothing", "2016-12-25 23:59"));
+        Result updateResult = editItem(itemId, itemData("Do nothing", "2016-12-25T23:59:00"));
         assertThat(updateResult.status()).isEqualTo(OK);
 
         Result findingResult = findSingleItem(itemId);
@@ -73,13 +73,13 @@ public class RoutesTest extends WithApplication {
 
         DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
         assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Do nothing");
-        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-25");
+        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-25T23:59:00");
         assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("OPEN");
     }
 
     @Test
     public void should_not_update_todo_item_for_unknown_id() {
-        Result result = editItem("unknown-id-1", itemData("Do nothing", "2016-12-25 23:59"));
+        Result result = editItem("unknown-id-1", itemData("Do nothing", "2016-12-25T23:59:00"));
         assertThat(result.status()).isEqualTo(NOT_FOUND);
     }
 
@@ -91,7 +91,7 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_remove_todo_item() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04 23:59"));
+        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
         deleteItem(itemId);
@@ -102,22 +102,22 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_find_all_todo_items() {
-        createItem(itemData("Do something", "2016-12-04 23:59"));
-        createItem(itemData("Send email", "2016-10-04 23:59"));
+        createItem(itemData("Do something", "2016-12-04T23:59:00"));
+        createItem(itemData("Send email", "2016-10-04T23:59:00"));
 
         Result result = route(app, method(GET).uri("/todos"));
         assertThat(result.status()).isEqualTo(OK);
 
         DocumentContext findingCtx = JsonPath.parse(contentAsString(result));
         assertThat(findingCtx).jsonPathAsString("$.items[0].name").isEqualTo("Do something");
-        assertThat(findingCtx).jsonPathAsString("$.items[0].dueDate").isEqualTo("2016-12-04");
+        assertThat(findingCtx).jsonPathAsString("$.items[0].dueDate").isEqualTo("2016-12-04T23:59:00");
         assertThat(findingCtx).jsonPathAsString("$.items[1].name").isEqualTo("Send email");
-        assertThat(findingCtx).jsonPathAsString("$.items[1].dueDate").isEqualTo("2016-10-04");
+        assertThat(findingCtx).jsonPathAsString("$.items[1].dueDate").isEqualTo("2016-10-04T23:59:00");
     }
 
     @Test
     public void should_mark_todo_item_as_done() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04 23:59"));
+        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
         markItem(itemId, "done");
@@ -127,7 +127,7 @@ public class RoutesTest extends WithApplication {
 
         DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
         assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Do something");
-        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04");
+        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04T23:59:00");
         assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("DONE");
     }
 
@@ -139,7 +139,7 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_mark_todo_item_as_open() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04 23:59"));
+        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
         markItem(itemId, "done");
@@ -150,7 +150,7 @@ public class RoutesTest extends WithApplication {
 
         DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
         assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Do something");
-        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04");
+        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04T23:59:00");
         assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("OPEN");
     }
 

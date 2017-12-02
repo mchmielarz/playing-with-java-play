@@ -30,7 +30,7 @@ import play.mvc.Result;
 import play.mvc.Results;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static pl.devthoughts.todos.controllers.TodoItemRequest.DUE_DATE_FORMAT;
+import static pl.devthoughts.todos.TodosConfig.DUE_DATE_FORMAT;
 
 public class ProtobufActionTest {
 
@@ -38,7 +38,7 @@ public class ProtobufActionTest {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DUE_DATE_FORMAT);
 
     private static final String ITEM_NAME = "Do something";
-    private static final String DUE_DATE = "2017-09-16 23:59";
+    private static final String DUE_DATE = "2017-09-16T23:59:00";
 
     private ActorSystem system;
     private Materializer mat;

@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
@@ -29,7 +28,6 @@ public class TodoItemSqlRepository implements TodoItemRepository {
         "SELECT * FROM todos WHERE item_id = ?";
 
     private final Database db;
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 
     @Inject
     public TodoItemSqlRepository(@NamedDatabase("todos") Database db) {

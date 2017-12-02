@@ -17,7 +17,7 @@ import play.mvc.Http;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static pl.devthoughts.todos.assertj.TodoItemRequestAssert.assertThat;
-import static pl.devthoughts.todos.controllers.TodoItemRequest.DUE_DATE_FORMAT;
+import static pl.devthoughts.todos.TodosConfig.DUE_DATE_FORMAT;
 import static pl.devthoughts.todos.modules.OpenCsvBodyParser.NON_CSV_MIME_TYPE_ERR_MSG;
 import static pl.devthoughts.todos.modules.OpenCsvBodyParser.NO_BODY_ERR_MSG;
 import static pl.devthoughts.todos.modules.OpenCsvBodyParser.TEXT_CSV_MIME_TYPE;
@@ -61,7 +61,7 @@ public class OpenCsvBodyParserTest {
     public void should_reject_csv_body_with_no_csv_header() throws Exception {
         ByteString
             bodyContent =
-            ByteString.fromString("Do something,2017-09-16 23:59");
+            ByteString.fromString("Do something,2017-09-16T23:59:00");
 
         Http.RequestHeader request =
             new Http.RequestBuilder()
@@ -75,7 +75,7 @@ public class OpenCsvBodyParserTest {
 
     @Test
     public void should_parse_request_with_csv_body() throws Exception {
-        ByteString bodyContent = ByteString.fromString("name,dueDate\nDo something,2017-09-16 23:59");
+        ByteString bodyContent = ByteString.fromString("name,dueDate\nDo something,2017-09-16T23:59:00");
 
         Http.RequestHeader request =
             new Http.RequestBuilder()
@@ -87,7 +87,7 @@ public class OpenCsvBodyParserTest {
 
         assertThat(requests.get(0))
             .hasName("Do something")
-            .hasDueDate(fromString("2017-09-16 23:59"));
+            .hasDueDate(fromString("2017-09-16T23:59:00"));
 
     }
 

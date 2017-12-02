@@ -22,7 +22,7 @@ import play.mvc.Http;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static pl.devthoughts.todos.assertj.TodoItemRequestAssert.assertThat;
-import static pl.devthoughts.todos.controllers.TodoItemRequest.DUE_DATE_FORMAT;
+import static pl.devthoughts.todos.TodosConfig.DUE_DATE_FORMAT;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.NON_PROTOBUF_MIME_TYPE_ERR_MSG;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.NO_BODY_ERR_MSG;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
@@ -70,7 +70,7 @@ public class TodoItemRequestProtobufParserTest {
         final byte[] todoItemAsBytes = ProtobufTodoItem.CreateItemRequest
             .newBuilder()
             .setName("Do something")
-            .setDueDate(asTimestamp("2017-09-16 23:59"))
+            .setDueDate(asTimestamp("2017-09-16T23:59:00"))
             .build().toByteArray();
         ByteString bodyContent = ByteString.fromArray(todoItemAsBytes);
 
@@ -84,7 +84,7 @@ public class TodoItemRequestProtobufParserTest {
 
         assertThat(itemRequest)
             .hasName("Do something")
-            .hasDueDate(fromString("2017-09-16 23:59"));
+            .hasDueDate(fromString("2017-09-16T23:59:00"));
     }
 
     private Timestamp.Builder asTimestamp(String dueDate) {

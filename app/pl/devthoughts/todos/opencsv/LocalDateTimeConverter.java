@@ -4,14 +4,14 @@ import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvConstraintViolationException;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 
-import pl.devthoughts.todos.controllers.TodoItemRequest;
+import pl.devthoughts.todos.TodosConfig;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeConverter extends AbstractBeanField<LocalDateTime> {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TodoItemRequest.DUE_DATE_FORMAT);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TodosConfig.DUE_DATE_FORMAT);
 
     @Override
     protected Object convert(String value)

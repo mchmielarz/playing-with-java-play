@@ -2,6 +2,7 @@ package pl.devthoughts.todos.assertj;
 
 import org.assertj.core.api.AbstractAssert;
 
+import pl.devthoughts.todos.TodosConfig;
 import pl.devthoughts.todos.domain.TodoItem;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ import java.util.Objects;
 
 public class TodoItemAssert extends AbstractAssert<TodoItemAssert, TodoItem> {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(TodosConfig.DUE_DATE_FORMAT);
 
     TodoItemAssert(TodoItem actual) {
         super(actual, TodoItemAssert.class);

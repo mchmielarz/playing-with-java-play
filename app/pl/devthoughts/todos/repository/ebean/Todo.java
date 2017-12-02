@@ -3,6 +3,7 @@ package pl.devthoughts.todos.repository.ebean;
 import io.ebean.Finder;
 import io.ebean.Model;
 
+import pl.devthoughts.todos.TodosConfig;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemStatus;
 
@@ -35,7 +36,7 @@ public class Todo extends Model {
     @Enumerated(STRING)
     private TodoItemStatus status;
 
-    @Formats.DateTime(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Formats.DateTime(pattern = TodosConfig.DUE_DATE_FORMAT)
     private LocalDateTime dueDate;
 
     public Todo(String uuid, String name, LocalDateTime dueDate) {

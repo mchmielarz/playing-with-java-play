@@ -31,7 +31,7 @@ import play.mvc.Result;
 import play.test.WithApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static pl.devthoughts.todos.controllers.TodoItemRequest.DUE_DATE_FORMAT;
+import static pl.devthoughts.todos.TodosConfig.DUE_DATE_FORMAT;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
 import static play.mvc.Http.Status.CREATED;
 import static play.test.Helpers.GET;
