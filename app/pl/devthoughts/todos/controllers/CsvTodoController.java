@@ -1,5 +1,8 @@
 package pl.devthoughts.todos.controllers;
 
+import io.vavr.Value;
+
+import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.modules.OpenCsvBodyParser;
 import pl.devthoughts.todos.service.TodoService;
 
@@ -25,9 +28,9 @@ public class CsvTodoController extends Controller {
     public Result addItems() {
         final List<TodoItemRequest> list = request().body().as(List.class);
         final String createdIds = list.stream()
-            .map(req -> todoService.saveItem(req))
-            .flatMap(optId -> optId.toJavaStream())
-            .map(id -> id.getId())
+            .map(todoService::saveItem)
+            .flatMap(Value::toJavaStream)
+            .map(TodoItemId::getId)
             .collect(Collectors.joining("\n"));
         return created(createdIds);
     }

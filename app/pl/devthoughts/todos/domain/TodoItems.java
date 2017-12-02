@@ -1,11 +1,12 @@
 package pl.devthoughts.todos.domain;
 
 import java.util.Collection;
-import java.util.Collections;
+
+import static java.util.Collections.EMPTY_LIST;
 
 public class TodoItems {
 
-    public static final TodoItems EMPTY = new TodoItems(Collections.EMPTY_LIST);
+    private static final TodoItems EMPTY = new TodoItems(EMPTY_LIST);
 
     private final Collection<TodoItem> items;
 
@@ -13,7 +14,7 @@ public class TodoItems {
         return items.isEmpty() ? EMPTY : new TodoItems(items);
     }
 
-    public TodoItems(Collection<TodoItem> items) {
+    private TodoItems(Collection<TodoItem> items) {
         this.items = items;
     }
 

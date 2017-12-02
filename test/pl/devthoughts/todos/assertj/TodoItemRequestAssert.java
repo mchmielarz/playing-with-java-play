@@ -13,7 +13,7 @@ public class TodoItemRequestAssert extends AbstractAssert<TodoItemRequestAssert,
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(TodosConfig.DUE_DATE_FORMAT);
 
-    TodoItemRequestAssert(TodoItemRequest actual) {
+    private TodoItemRequestAssert(TodoItemRequest actual) {
         super(actual, TodoItemRequestAssert.class);
     }
 

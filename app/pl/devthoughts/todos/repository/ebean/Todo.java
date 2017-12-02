@@ -50,7 +50,7 @@ public class Todo extends Model {
         this.status = status;
     }
 
-    public String getUuid() {
+    String getUuid() {
         return uuid;
     }
 
@@ -76,11 +76,11 @@ public class Todo extends Model {
         save();
     }
 
-    public TodoItem asDomainItem() {
+    TodoItem asDomainItem() {
         return new TodoItem(getUuid(), getName(), getDueDate(), getStatus());
     }
 
-    public static final Finder<Long, Todo> find = new TodoFinder();
+    static final Finder<Long, Todo> find = new TodoFinder();
 
     public static Todo from(TodoItem item) {
         return new Todo(item.getId(), item.getName(), item.getDueDate(), item.getStatus());

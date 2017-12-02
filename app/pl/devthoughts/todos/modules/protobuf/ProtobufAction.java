@@ -21,8 +21,6 @@ public class ProtobufAction extends Action<ProtobufParser> {
 
     private static Logger.ALogger logger = Logger.of(ProtobufAction.class);
 
-    public ProtobufAction() { }
-
     ProtobufAction(ProtobufParser configuration, Action<?> delegate) {
         this.configuration = configuration;
         this.delegate = delegate;
