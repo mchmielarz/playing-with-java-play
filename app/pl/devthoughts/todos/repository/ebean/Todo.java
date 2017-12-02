@@ -6,7 +6,7 @@ import io.ebean.Model;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemStatus;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,15 +36,15 @@ public class Todo extends Model {
     private TodoItemStatus status;
 
     @Formats.DateTime(pattern = "yyyy-MM-dd'T'HH:mm")
-    private Date dueDate;
+    private LocalDateTime dueDate;
 
-    public Todo(String uuid, String name, Date dueDate) {
+    public Todo(String uuid, String name, LocalDateTime dueDate) {
         this.uuid = uuid;
         this.name = name;
         this.dueDate = dueDate;
     }
 
-    public Todo(String uuid, String name, Date dueDate, TodoItemStatus status) {
+    public Todo(String uuid, String name, LocalDateTime dueDate, TodoItemStatus status) {
         this(uuid, name, dueDate);
         this.status = status;
     }
@@ -57,7 +57,7 @@ public class Todo extends Model {
         return name;
     }
 
-    public Date getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 

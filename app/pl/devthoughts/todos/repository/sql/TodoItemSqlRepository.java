@@ -13,8 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -76,7 +76,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate) {
+    public Try<TodoItem> updateItem(TodoItemId itemId, String name, LocalDateTime dueDate) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
@@ -105,11 +105,11 @@ public class TodoItemSqlRepository implements TodoItemRepository {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
     }
 
-    private Date asDate(Timestamp dueDate) {
-        return Date.from(dueDate.toInstant());
+    private LocalDateTime asDate(Timestamp dueDate) {
+        return dueDate.toLocalDateTime();
     }
 
-    private Timestamp asTimestamp(Date dueDate) {
-        return Timestamp.from(dueDate.toInstant());
+    private Timestamp asTimestamp(LocalDateTime dueDate) {
+        return Timestamp.valueOf(dueDate);
     }
 }

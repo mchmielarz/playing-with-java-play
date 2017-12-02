@@ -10,8 +10,8 @@ import org.junit.Test;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 import play.Application;
 import play.test.WithApplication;
@@ -92,7 +92,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
     public void should_update_given_todo() {
         final TodoItemId itemId = storeSingleItem(DO_SOMETHING);
 
-        final Date newDate = new Date();
+        final LocalDateTime newDate = LocalDateTime.now();
         final String newName = "something else";
         final Try<TodoItem> item = repository.updateItem(itemId, newName, newDate);
 
@@ -103,7 +103,7 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
 
     @NotNull
     private TodoItemId storeSingleItem(String itemName) {
-        final Try<TodoItemId> id = repository.saveItem(new TodoItem(itemName, new Date()));
+        final Try<TodoItemId> id = repository.saveItem(new TodoItem(itemName, LocalDateTime.now()));
         assertTrue(id.isSuccess());
         return id.get();
     }

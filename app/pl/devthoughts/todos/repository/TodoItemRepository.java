@@ -1,11 +1,12 @@
 package pl.devthoughts.todos.repository;
 
 import io.vavr.control.Try;
+
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 
 public interface TodoItemRepository {
 
@@ -13,7 +14,7 @@ public interface TodoItemRepository {
 
     Try<TodoItem> findItem(TodoItemId id);
 
-    Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate);
+    Try<TodoItem> updateItem(TodoItemId itemId, String name, LocalDateTime dueDate);
 
     Try<TodoItem> removeItem(TodoItemId itemId);
 

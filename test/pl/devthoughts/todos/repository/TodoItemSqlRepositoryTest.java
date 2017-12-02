@@ -12,7 +12,7 @@ import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.repository.sql.TodoItemSqlRepository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import play.db.Database;
 import play.db.Databases;
@@ -41,7 +41,7 @@ public class TodoItemSqlRepositoryTest {
 
     @Test
     public void should_save_a_single_todo() {
-        final Date dueDate = new Date();
+        final LocalDateTime dueDate = LocalDateTime.now();
         final String name = "Do something";
 
         final Option<TodoItemId> itemId = repository.saveItem(new TodoItem(name, dueDate)).toOption();

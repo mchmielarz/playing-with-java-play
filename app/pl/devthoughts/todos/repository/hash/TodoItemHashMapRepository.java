@@ -2,12 +2,13 @@ package pl.devthoughts.todos.repository.hash;
 
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.repository.TodoItemRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
@@ -28,7 +29,7 @@ public class TodoItemHashMapRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate) {
+    public Try<TodoItem> updateItem(TodoItemId itemId, String name, LocalDateTime dueDate) {
         return foundItem(itemId.getId())
             .map(item -> item.withName(name))
             .map(item -> item.withDueDate(dueDate))

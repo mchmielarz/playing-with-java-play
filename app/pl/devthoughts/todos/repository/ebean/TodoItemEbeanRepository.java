@@ -8,6 +8,7 @@ import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.repository.TodoItemRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
     }
 
     @Override
-    public Try<TodoItem> updateItem(TodoItemId itemId, String name, Date dueDate) {
+    public Try<TodoItem> updateItem(TodoItemId itemId, String name, LocalDateTime dueDate) {
         return Try.of(() -> doesExist(itemId))
             .map(b -> b ?
                 Try.success(b) :

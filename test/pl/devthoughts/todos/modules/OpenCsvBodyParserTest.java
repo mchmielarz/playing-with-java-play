@@ -10,9 +10,7 @@ import org.junit.Test;
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import play.api.http.ParserConfiguration;
 import play.mvc.Http;
@@ -89,7 +87,7 @@ public class OpenCsvBodyParserTest {
 
         assertThat(requests.get(0))
             .hasName("Do something")
-            .hasDueDate(asDate("2017-09-16 23:59"));
+            .hasDueDate(fromString("2017-09-16 23:59"));
 
     }
 
@@ -99,9 +97,9 @@ public class OpenCsvBodyParserTest {
     }
 
     @NotNull
-    private Date asDate(String date) {
+    private LocalDateTime fromString(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DUE_DATE_FORMAT);
-        return Date.from(LocalDateTime.parse(date, formatter).atZone(ZoneId.systemDefault()).toInstant());
+        return LocalDateTime.parse(date, formatter);
     }
 
     @NotNull

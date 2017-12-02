@@ -12,7 +12,9 @@ import io.vavr.control.Try;
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthougths.todos.ProtobufTodoItem;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import play.api.http.ParserConfiguration;
 import play.http.HttpErrorHandler;
@@ -56,13 +58,14 @@ public class TodoItemRequestProtobufParser extends BodyParser.BufferingBodyParse
 
     private Either<String, TodoItemRequest> doParse(ByteString bytes) {
         return Try.of(() -> ProtobufTodoItem.CreateItemRequest.parseFrom(bytes.toArray()))
-            .map(req -> new TodoItemRequest(req.getName(), asDate(req.getDueDate())))
+            .map(req -> new TodoItemRequest(req.getName(), asLocalDateTime(req.getDueDate())))
             .toEither()
             .mapLeft(Throwable::getMessage);
     }
 
-    private Date asDate(Timestamp itemRequest) {
-        return new Date(itemRequest.getSeconds() * 1000);
+    private LocalDateTime asLocalDateTime(Timestamp timestamp) {
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos()),
+            ZoneId.systemDefault());
     }
 
 }

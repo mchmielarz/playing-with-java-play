@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static pl.devthoughts.todos.domain.TodoItemStatus.DONE;
@@ -17,7 +17,7 @@ public class TodoItem {
     private TodoItemStatus status;
     @JsonFormat
         (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dueDate;
+    private LocalDateTime dueDate;
 
     static public TodoItem from(TodoItemRequest req) {
         return new TodoItem(req.getName(), req.getDueDate());
@@ -27,14 +27,14 @@ public class TodoItem {
         this.id = UUID.randomUUID().toString();
     }
 
-    public TodoItem(String name, Date dueDate) {
+    public TodoItem(String name, LocalDateTime dueDate) {
         this();
         this.name = name;
         this.dueDate = dueDate;
         this.status = OPEN;
     }
 
-    public TodoItem(String id, String name, Date dueDate, TodoItemStatus status) {
+    public TodoItem(String id, String name, LocalDateTime dueDate, TodoItemStatus status) {
         this.id = id;
         this.name = name;
         this.dueDate = dueDate;
@@ -49,7 +49,7 @@ public class TodoItem {
         return name;
     }
 
-    public Date getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
@@ -62,7 +62,7 @@ public class TodoItem {
         return this;
     }
 
-    public TodoItem withDueDate(Date dueDate) {
+    public TodoItem withDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
         return this;
     }

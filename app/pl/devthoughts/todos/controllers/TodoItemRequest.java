@@ -2,9 +2,11 @@ package pl.devthoughts.todos.controllers;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvDate;
+import com.opencsv.bean.CsvCustomBindByName;
 
-import java.util.Date;
+import pl.devthoughts.todos.opencsv.LocalDateTimeConverter;
+
+import java.time.LocalDateTime;
 
 public class TodoItemRequest {
 
@@ -13,14 +15,13 @@ public class TodoItemRequest {
     @CsvBindByName(column = "name", required = true)
     private String name;
 
-    @CsvBindByName(column = "dueDate", required = true)
-    @CsvDate(value = DUE_DATE_FORMAT)
+    @CsvCustomBindByName(column = "dueDate", required = true, converter = LocalDateTimeConverter.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DUE_DATE_FORMAT)
-    private Date dueDate;
+    private LocalDateTime dueDate;
 
     public TodoItemRequest() {}
 
-    public TodoItemRequest(String name, Date dueDate) {
+    public TodoItemRequest(String name, LocalDateTime dueDate) {
         this();
         this.name = name;
         this.dueDate = dueDate;
@@ -34,11 +35,11 @@ public class TodoItemRequest {
         this.name = name;
     }
 
-    public Date getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 }

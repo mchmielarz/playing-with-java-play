@@ -16,7 +16,6 @@ import pl.devthougths.todos.ProtobufTodoItem;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 import play.api.http.ParserConfiguration;
 import play.mvc.Http;
@@ -85,7 +84,7 @@ public class TodoItemRequestProtobufParserTest {
 
         assertThat(itemRequest)
             .hasName("Do something")
-            .hasDueDate(asDate("2017-09-16 23:59"));
+            .hasDueDate(fromString("2017-09-16 23:59"));
     }
 
     private long getSecondsFor(String date) {
@@ -99,9 +98,8 @@ public class TodoItemRequestProtobufParserTest {
     }
 
     @NotNull
-    private Date asDate(String date) {
-        return Date
-            .from(LocalDateTime.parse(date, FORMATTER).atZone(ZoneId.systemDefault()).toInstant());
+    private LocalDateTime fromString(String date) {
+        return LocalDateTime.parse(date, FORMATTER);
     }
 
     @NotNull
