@@ -20,6 +20,9 @@ import javax.inject.Inject;
 import play.db.Database;
 import play.db.NamedDatabase;
 
+import static pl.devthoughts.todos.TimeUtils.asLocalDateTime;
+import static pl.devthoughts.todos.TimeUtils.asTimestamp;
+
 public class TodoItemSqlRepository implements TodoItemRepository {
 
     private static final String INSERT_TODO_ITEM =
@@ -66,7 +69,7 @@ public class TodoItemSqlRepository implements TodoItemRepository {
                     String status = result.getString("status");
                     String name = result.getString("item_name");
                     Timestamp dueDate = result.getTimestamp("due_date");
-                    item = new TodoItem(id, name, asDate(dueDate), TodoItemStatus.valueOf(status));
+                    item = new TodoItem(id, name, asLocalDateTime(dueDate), TodoItemStatus.valueOf(status));
                 }
             }
         }
@@ -101,13 +104,5 @@ public class TodoItemSqlRepository implements TodoItemRepository {
     @Override
     public Try<TodoItem> reopenItem(TodoItemId itemId) {
         throw new UnsupportedOperationException("Guess what? It's not implemented!");
-    }
-
-    private LocalDateTime asDate(Timestamp dueDate) {
-        return dueDate.toLocalDateTime();
-    }
-
-    private Timestamp asTimestamp(LocalDateTime dueDate) {
-        return Timestamp.valueOf(dueDate);
     }
 }

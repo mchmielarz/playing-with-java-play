@@ -3,7 +3,6 @@ package pl.devthoughts.todos.routes;
 import akka.util.ByteString;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.Timestamp;
 import com.typesafe.config.ConfigFactory;
 
 import io.vavr.collection.List;
@@ -17,8 +16,6 @@ import org.junit.Test;
 import pl.devthoughts.todos.repository.TodoItemRepository;
 import pl.devthougths.todos.ProtobufTodoItem;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 
@@ -31,6 +28,7 @@ import play.mvc.Result;
 import play.test.WithApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static pl.devthoughts.todos.TimeUtils.asTimestamp;
 import static pl.devthoughts.todos.TodosConfig.DUE_DATE_FORMAT;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
 import static play.mvc.Http.Status.CREATED;
@@ -159,15 +157,6 @@ public class ProtobufRoutesTest extends WithApplication {
             .setDueDate(asTimestamp(dueDate))
             .build().toByteArray();
         return ByteString.fromArray(todoItemAsBytes);
-    }
-
-    private Timestamp asTimestamp(String dueDate) {
-        return Timestamp.newBuilder().setSeconds(asSeconds(dueDate)).build();
-    }
-
-    private long asSeconds(String date) {
-        final LocalDateTime ldt = LocalDateTime.parse(date, FORMATTER);
-        return ldt.atZone(ZoneId.systemDefault()).toEpochSecond();
     }
 
     private Http.RequestBuilder method(String method) {

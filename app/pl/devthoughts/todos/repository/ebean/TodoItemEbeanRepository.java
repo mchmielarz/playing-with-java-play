@@ -11,7 +11,6 @@ import pl.devthoughts.todos.repository.TodoItemRepository;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 
 import play.Logger;
 
@@ -66,13 +65,6 @@ public class TodoItemEbeanRepository implements TodoItemRepository {
 
     @Override
     public Collection<TodoItem> findAllItems() {
-        Option.none().toCharSeq();
-        Option.none().toArray();
-        Option.none().toPriorityQueue();
-        Option.none().toTree();
-        Option.none().toTry();
-        Option.none().iterator();
-
         return Try.of(() -> Todo.find.all())
             .map(todos -> todos.stream().map(item -> item.asDomainItem()).collect(toList()))
             .onFailure(ex -> LOGGER.error("Cannot fetch todo items", ex))

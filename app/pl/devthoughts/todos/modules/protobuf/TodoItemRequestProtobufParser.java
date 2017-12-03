@@ -3,7 +3,6 @@ package pl.devthoughts.todos.modules.protobuf;
 import akka.util.ByteString;
 
 import com.google.inject.Inject;
-import com.google.protobuf.Timestamp;
 
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -12,14 +11,12 @@ import io.vavr.control.Try;
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthougths.todos.ProtobufTodoItem;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
 import play.api.http.ParserConfiguration;
 import play.http.HttpErrorHandler;
 import play.mvc.BodyParser;
 import play.mvc.Http;
+
+import static pl.devthoughts.todos.TimeUtils.asLocalDateTime;
 
 public class TodoItemRequestProtobufParser extends BodyParser.BufferingBodyParser<TodoItemRequest> {
 
@@ -61,11 +58,6 @@ public class TodoItemRequestProtobufParser extends BodyParser.BufferingBodyParse
             .map(req -> new TodoItemRequest(req.getName(), asLocalDateTime(req.getDueDate())))
             .toEither()
             .mapLeft(Throwable::getMessage);
-    }
-
-    private LocalDateTime asLocalDateTime(Timestamp timestamp) {
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos()),
-            ZoneId.systemDefault());
     }
 
 }

@@ -2,8 +2,6 @@ package pl.devthoughts.todos.modules.protobuf;
 
 import akka.util.ByteString;
 
-import com.google.protobuf.Timestamp;
-
 import io.vavr.collection.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -14,15 +12,15 @@ import pl.devthoughts.todos.modules.DummyErrorHandler;
 import pl.devthougths.todos.ProtobufTodoItem;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import play.api.http.ParserConfiguration;
 import play.mvc.Http;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static pl.devthoughts.todos.assertj.TodoItemRequestAssert.assertThat;
+import static pl.devthoughts.todos.TimeUtils.asTimestamp;
 import static pl.devthoughts.todos.TodosConfig.DUE_DATE_FORMAT;
+import static pl.devthoughts.todos.assertj.TodoItemRequestAssert.assertThat;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.NON_PROTOBUF_MIME_TYPE_ERR_MSG;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.NO_BODY_ERR_MSG;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
@@ -85,15 +83,6 @@ public class TodoItemRequestProtobufParserTest {
         assertThat(itemRequest)
             .hasName("Do something")
             .hasDueDate(fromString("2017-09-16T23:59:00"));
-    }
-
-    private Timestamp.Builder asTimestamp(String dueDate) {
-        return Timestamp.newBuilder().setSeconds(asSeconds(dueDate));
-    }
-
-    private long asSeconds(String date) {
-        final LocalDateTime ldt = LocalDateTime.parse(date, FORMATTER);
-        return ldt.atZone(ZoneId.systemDefault()).toEpochSecond();
     }
 
     @NotNull

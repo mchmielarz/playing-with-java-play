@@ -7,8 +7,6 @@ import akka.stream.javadsl.Sink;
 import akka.testkit.TestProbe;
 import akka.util.ByteString;
 
-import com.google.protobuf.Timestamp;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +15,6 @@ import org.mockito.stubbing.Answer;
 
 import pl.devthougths.todos.ProtobufTodoItem;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -30,6 +26,7 @@ import play.mvc.Result;
 import play.mvc.Results;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static pl.devthoughts.todos.TimeUtils.asTimestamp;
 import static pl.devthoughts.todos.TodosConfig.DUE_DATE_FORMAT;
 
 public class ProtobufActionTest {
@@ -60,7 +57,7 @@ public class ProtobufActionTest {
         final byte[] todoItemAsBytes = ProtobufTodoItem.CreateItemRequest
             .newBuilder()
             .setName(ITEM_NAME)
-            .setDueDate(Timestamp.newBuilder().setSeconds(getSecondsFor(DUE_DATE)))
+            .setDueDate(asTimestamp(DUE_DATE))
             .build()
             .toByteArray();
         ByteString bodyContent = ByteString.fromArray(todoItemAsBytes);
@@ -94,11 +91,6 @@ public class ProtobufActionTest {
 
     private JavaContextComponents javaContextComponents() {
         return Mockito.mock(JavaContextComponents.class);
-    }
-
-    private long getSecondsFor(String date) {
-        final LocalDateTime ldt = LocalDateTime.parse(date, FORMATTER);
-        return ldt.atZone(ZoneId.systemDefault()).toEpochSecond();
     }
 
     private Action<ProtobufParser> delegateAction() {

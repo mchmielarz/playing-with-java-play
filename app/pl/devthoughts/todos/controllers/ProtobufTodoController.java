@@ -1,7 +1,5 @@
 package pl.devthoughts.todos.controllers;
 
-import com.google.protobuf.Timestamp;
-
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 
@@ -11,15 +9,13 @@ import pl.devthoughts.todos.modules.protobuf.ProtobufParser;
 import pl.devthoughts.todos.service.TodoService;
 import pl.devthougths.todos.ProtobufTodoItem;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
 import javax.inject.Inject;
 
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import static pl.devthoughts.todos.TimeUtils.asLocalDateTime;
+import static pl.devthoughts.todos.TimeUtils.asProtobufTimestamp;
 import static pl.devthoughts.todos.modules.protobuf.TodoItemRequestProtobufParser.PROTOBUF_MIME_TYPE;
 
 public class ProtobufTodoController extends Controller {
@@ -75,19 +71,7 @@ public class ProtobufTodoController extends Controller {
             .toByteArray();
     }
 
-    private Timestamp asProtobufTimestamp(LocalDateTime dueDate) {
-        Instant instant = dueDate.atZone(ZoneId.systemDefault()).toInstant();
-        return Timestamp.newBuilder()
-            .setSeconds(instant.getEpochSecond())
-            .setNanos(instant.getNano())
-            .build();
-    }
-
     private <T> T getRequest(Class<T> klas) {
         return request().body().as(klas);
-    }
-
-    private LocalDateTime asLocalDateTime(Timestamp timestamp) {
-        return LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos()), ZoneId.systemDefault());
     }
 }

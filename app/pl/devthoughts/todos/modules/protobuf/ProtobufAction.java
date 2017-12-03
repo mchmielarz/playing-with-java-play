@@ -28,12 +28,7 @@ public class ProtobufAction extends Action<ProtobufParser> {
 
     @Override
     public CompletionStage<Result> call(Http.Context ctx) {
-
         final Class<? extends MessageOrBuilder> inputType = configuration.value();
-
-        System.out.println("delegate " + (delegate == null));
-        System.out.println("inputType " + (inputType == null));
-
         return Try.of(() -> parseMessage(inputType, ctx))
             .map(protoMessage -> requestWithParsedData(ctx, protoMessage))
             .map(request -> delegate.call(ctx.withRequest(request)))
