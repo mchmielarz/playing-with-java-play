@@ -1,5 +1,7 @@
 package pl.devthoughts.todos.repository.ebean;
 
+import com.typesafe.config.ConfigFactory;
+
 import io.ebean.Ebean;
 import io.vavr.control.Try;
 
@@ -14,13 +16,13 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 import play.Application;
+import play.Mode;
+import play.inject.guice.GuiceApplicationBuilder;
 import play.test.WithApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static pl.devthoughts.todos.assertj.TodoItemAssert.assertThat;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.inMemoryDatabase;
 
 public class TodoItemEbeanRepositoryTest extends WithApplication {
 
@@ -110,7 +112,10 @@ public class TodoItemEbeanRepositoryTest extends WithApplication {
 
     @Override
     protected Application provideApplication() {
-        return fakeApplication(inMemoryDatabase());
+        return new GuiceApplicationBuilder()
+            .withConfigLoader(env -> ConfigFactory.load("application-test.conf"))
+            .in(Mode.TEST)
+            .build();
     }
 
 }
