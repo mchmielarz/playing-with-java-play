@@ -1,15 +1,11 @@
-package pl.devthoughts.todos.modules;
+package pl.devthoughts.todos.modules.csv;
 
 import akka.util.ByteString;
-
 import io.vavr.collection.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-
 import pl.devthoughts.todos.controllers.TodoItemRequest;
-
-import pl.devthoughts.todos.modules.csv.OpenCsvBodyParser;
+import pl.devthoughts.todos.modules.DummyErrorHandler;
 import play.api.http.ParserConfiguration;
 import play.mvc.Http;
 
