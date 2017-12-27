@@ -2,7 +2,7 @@ package pl.devthoughts.todos.controllers;
 
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
-import pl.devthoughts.todos.modules.protobuf.JsonOrXmlBodyParser;
+import pl.devthoughts.todos.modules.JsonOrXmlBodyParser;
 import pl.devthoughts.todos.service.TodoService;
 import play.libs.Jsonp;
 import play.mvc.BodyParser;

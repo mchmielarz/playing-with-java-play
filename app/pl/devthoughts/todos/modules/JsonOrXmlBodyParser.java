@@ -1,4 +1,4 @@
-package pl.devthoughts.todos.modules.protobuf;
+package pl.devthoughts.todos.modules;
 
 import akka.util.ByteString;
 import com.fasterxml.jackson.databind.JsonNode;

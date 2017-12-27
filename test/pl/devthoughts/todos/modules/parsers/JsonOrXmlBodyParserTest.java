@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import pl.devthoughts.todos.TimeUtils;
 import pl.devthoughts.todos.controllers.TodoItemRequest;
-import pl.devthoughts.todos.modules.protobuf.JsonOrXmlBodyParser;
+import pl.devthoughts.todos.modules.JsonOrXmlBodyParser;
 import play.api.http.HttpConfiguration;
 import play.http.HttpErrorHandler;
 import play.libs.F;
