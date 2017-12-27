@@ -11,7 +11,7 @@ DELETE        /todos/:id             pl.devthoughts.todos.controllers.TodoContro
 POST          /todos/:id/done        pl.devthoughts.todos.controllers.TodoController.done(id: String)
 POST          /todos/:id/open        pl.devthoughts.todos.controllers.TodoController.reopen(id: String)
 
-POST          /csv/todos             pl.devthoughts.todos.controllers.CsvTodoController.addItems()
+POST          /csv/todos             pl.devthoughts.todos.controllers.csv.CsvTodoController.addItems()
 
-POST          /proto/todos           pl.devthoughts.todos.controllers.ProtobufTodoController.addItem()
-GET           /proto/todos           pl.devthoughts.todos.controllers.ProtobufTodoController.findItems()
+POST          /proto/todos           pl.devthoughts.todos.controllers.protobuf.ProtobufTodoController.addItem()
+GET           /proto/todos           pl.devthoughts.todos.controllers.protobuf.ProtobufTodoController.findItems()
