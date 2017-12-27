@@ -85,7 +85,6 @@ public class JsonOrXmlBodyParser implements BodyParser<TodoItemRequest> {
                       } else {
                         Document xml = resultOrXml.right.get();
                         try {
-                          System.out.println("XML: " + xml);
                           String name = xml.getElementsByTagName("name").item(0).getTextContent();
                           String dueDate = xml.getElementsByTagName("dueDate").item(0).getTextContent();
                           TodoItemRequest item = new TodoItemRequest(name, TimeUtils.fromString(dueDate));
