@@ -1,15 +1,16 @@
 package pl.devthoughts.todos.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
+import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.domain.TodoItems;
+import pl.devthoughts.todos.modules.protobuf.JsonOrXmlBodyParser;
 import pl.devthoughts.todos.service.TodoService;
-
-import javax.inject.Inject;
-
+import play.libs.Jsonp;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.twirl.api.Content;
+
+import javax.inject.Inject;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -18,7 +19,6 @@ import static io.vavr.Patterns.$Failure;
 import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
 import static io.vavr.Patterns.$Success;
-import static play.libs.Json.fromJson;
 import static play.libs.Json.toJson;
 
 public class TodoController extends Controller {
@@ -30,11 +30,11 @@ public class TodoController extends Controller {
         this.todoService = todoService;
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
+    @BodyParser.Of(JsonOrXmlBodyParser.class)
     public Result addItem() {
         TodoItemRequest request = getRequest();
         return todoService.saveItem(request)
-            .map(itemId -> created(toJson(itemId)))
+            .map(itemId -> created(content(itemId)))
             .getOrElse(internalServerError());
     }
 
@@ -46,7 +46,7 @@ public class TodoController extends Controller {
             ));
     }
 
-    @BodyParser.Of(BodyParser.Json.class)
+    @BodyParser.Of(JsonOrXmlBodyParser.class)
     public Result updateItem(String id) {
         final TodoItemRequest req = getRequest();
         return todoService.updateItem(id, req)
@@ -86,7 +86,28 @@ public class TodoController extends Controller {
     }
 
     private TodoItemRequest getRequest() {
-        JsonNode json = request().body().asJson();
-        return fromJson(json, TodoItemRequest.class);
+        return request().body().as(TodoItemRequest.class);
+    }
+
+    private Content content(TodoItemId itemId) {
+        final String contentType = request()
+            .contentType()
+            .orElse("application/json");
+
+        if (contentType.equals("text/xml") || contentType.equals("application/xml") || contentType.matches("application/.*\\+xml.*")) {
+            return new Content() {
+                @Override
+                public String body() {
+                    return String.format("<itemId>%s</itemId>", itemId.getId());
+                }
+
+                @Override
+                public String contentType() {
+                    return "text/xml";
+                }
+            };
+        } else {
+            return Jsonp.jsonp("", toJson(itemId));
+        }
     }
 }

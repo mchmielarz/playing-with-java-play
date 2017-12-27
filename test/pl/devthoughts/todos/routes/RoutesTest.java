@@ -4,22 +4,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.typesafe.config.ConfigFactory;
-
 import org.junit.Before;
 import org.junit.Test;
-
+import org.w3c.dom.Document;
 import pl.devthoughts.todos.repository.TodoItemRepository;
-
 import play.Application;
 import play.Mode;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
+import play.libs.XML;
 import play.mvc.Http.RequestBuilder;
 import play.mvc.Result;
 import play.test.WithApplication;
 
 import static com.revinate.assertj.json.JsonPathAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.junit.Assert.assertThat;
+import static org.xmlunit.matchers.EvaluateXPathMatcher.hasXPath;
 import static play.test.Helpers.CREATED;
 import static play.test.Helpers.DELETE;
 import static play.test.Helpers.GET;
@@ -38,14 +41,32 @@ public class RoutesTest extends WithApplication {
     }
 
     @Test
-    public void should_create_single_todo_item() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
+    public void should_create_single_todo_item_from_json() {
+        Result creationResult = createItem_Json(itemData_Json("Do something", "2016-12-04T23:59:00"));
 
         assertThat(creationResult.status()).isEqualTo(CREATED);
         DocumentContext creationCtx = JsonPath.parse(contentAsString(creationResult));
         assertThat(creationCtx).jsonPathAsString("$.id").isNotEmpty();
 
         Result findingResult = findSingleItem(itemId(creationResult));
+
+        assertThat(findingResult.status()).isEqualTo(OK);
+        DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
+        assertThat(findingCtx).jsonPathAsString("$.name").isEqualTo("Do something");
+        assertThat(findingCtx).jsonPathAsString("$.dueDate").isEqualTo("2016-12-04T23:59:00");
+        assertThat(findingCtx).jsonPathAsString("$.status").isEqualTo("OPEN");
+    }
+
+    @Test
+    public void should_create_single_todo_item_from_xml() {
+        Result creationResult = createItem_Xml(itemData_Xml("Do something", "2016-12-04T23:59:00"));
+
+        assertThat(creationResult.status()).isEqualTo(CREATED);
+        final String xml = contentAsString(creationResult);
+        assertThat(xml, hasXPath("//itemId", not(isEmptyString())));
+
+        String itemId = itemIdFromXML(xml);
+        Result findingResult = findSingleItem(itemId);
 
         assertThat(findingResult.status()).isEqualTo(OK);
         DocumentContext findingCtx = JsonPath.parse(contentAsString(findingResult));
@@ -62,10 +83,10 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_update_todo_item_with_new_data() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
+        Result creationResult = createItem_Json(itemData_Json("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
-        Result updateResult = editItem(itemId, itemData("Do nothing", "2016-12-25T23:59:00"));
+        Result updateResult = editItem(itemId, itemData_Json("Do nothing", "2016-12-25T23:59:00"));
         assertThat(updateResult.status()).isEqualTo(OK);
 
         Result findingResult = findSingleItem(itemId);
@@ -79,7 +100,7 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_not_update_todo_item_for_unknown_id() {
-        Result result = editItem("unknown-id-1", itemData("Do nothing", "2016-12-25T23:59:00"));
+        Result result = editItem("unknown-id-1", itemData_Json("Do nothing", "2016-12-25T23:59:00"));
         assertThat(result.status()).isEqualTo(NOT_FOUND);
     }
 
@@ -91,7 +112,7 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_remove_todo_item() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
+        Result creationResult = createItem_Json(itemData_Json("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
         deleteItem(itemId);
@@ -102,8 +123,8 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_find_all_todo_items() {
-        createItem(itemData("Do something", "2016-12-04T23:59:00"));
-        createItem(itemData("Send email", "2016-10-04T23:59:00"));
+        createItem_Json(itemData_Json("Do something", "2016-12-04T23:59:00"));
+        createItem_Json(itemData_Json("Send email", "2016-10-04T23:59:00"));
 
         Result result = route(app, method(GET).uri("/todos"));
         assertThat(result.status()).isEqualTo(OK);
@@ -117,7 +138,7 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_mark_todo_item_as_done() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
+        Result creationResult = createItem_Json(itemData_Json("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
         markItem(itemId, "done");
@@ -139,7 +160,7 @@ public class RoutesTest extends WithApplication {
 
     @Test
     public void should_mark_todo_item_as_open() {
-        Result creationResult = createItem(itemData("Do something", "2016-12-04T23:59:00"));
+        Result creationResult = createItem_Json(itemData_Json("Do something", "2016-12-04T23:59:00"));
         String itemId = itemId(creationResult);
 
         markItem(itemId, "done");
@@ -160,8 +181,16 @@ public class RoutesTest extends WithApplication {
         assertThat(result.status()).isEqualTo(NOT_FOUND);
     }
 
-    private Result createItem(JsonNode itemData) {
+    private Result createItem_Json(JsonNode itemData) {
         return route(app, method(POST).uri("/todos").bodyJson(itemData));
+    }
+
+    private Result createItem_Xml(Document itemData) {
+        return route(app, method(POST).uri("/todos").bodyXml(itemData));
+    }
+
+    private String itemIdFromXML(String xml) {
+        return XML.fromString(xml).getElementsByTagName("itemId").item(0).getTextContent();
     }
 
     private Result findSingleItem(String itemId) {
@@ -178,10 +207,14 @@ public class RoutesTest extends WithApplication {
         return route(app, method(DELETE).uri("/todos/" + itemId));
     }
 
-    private JsonNode itemData(String name, String dueDate) {
+    private JsonNode itemData_Json(String name, String dueDate) {
         return Json.newObject()
             .put("name", name)
             .put("dueDate", dueDate);
+    }
+
+    private Document itemData_Xml(String name, String dueDate) {
+        return XML.fromString(String.format("<item><name>%s</name><dueDate>%s</dueDate></item>", name, dueDate));
     }
 
     private Result markItem(String itemId, String status) {

@@ -17,6 +17,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % "2.5.3" % "test",
   "org.assertj" % "assertj-core" % "3.5.2" % "test",
   "com.revinate" % "assertj-json" % "1.0.1" % "test",
+  "org.xmlunit" % "xmlunit-core" % "2.5.1" % "test",
+  "org.xmlunit" % "xmlunit-matchers" % "2.5.1" % "test",
+  "org.hamcrest" % "hamcrest-library" % "1.3" % "test",
   "org.mockito" % "mockito-core" % "2.12.0" % "test",
   "com.h2database" % "h2" % "1.4.192" % "test"
 )
