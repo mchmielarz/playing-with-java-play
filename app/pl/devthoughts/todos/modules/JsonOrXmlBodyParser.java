@@ -21,15 +21,15 @@ import java.util.concurrent.Executor;
 
 public class JsonOrXmlBodyParser implements BodyParser<TodoItemRequest> {
 
-  private final TolerantJson jsonParser;
-  private final TolerantXml xmlParser;
+  private final TolerantJson jsonDelegate;
+  private final TolerantXml xmlDelegate;
   private final Executor executor;
 
   @Inject
-  public JsonOrXmlBodyParser(TolerantJson jsonParser, TolerantXml xmlParser,
+  public JsonOrXmlBodyParser(TolerantJson jsonDelegate, TolerantXml xmlDelegate,
                              Executor executor) {
-    this.jsonParser = jsonParser;
-    this.xmlParser = xmlParser;
+    this.jsonDelegate = jsonDelegate;
+    this.xmlDelegate = xmlDelegate;
     this.executor = executor;
   }
 
@@ -60,7 +60,7 @@ public class JsonOrXmlBodyParser implements BodyParser<TodoItemRequest> {
 
   private Accumulator<ByteString, F.Either<Result, TodoItemRequest>> parseJson(
       Http.RequestHeader request) {
-    return jsonParser.apply(request)
+    return jsonDelegate.apply(request)
                      .map(resultOrJson -> {
                        if (resultOrJson.left.isPresent()) {
                          return F.Either.Left(resultOrJson.left.get());
@@ -78,7 +78,7 @@ public class JsonOrXmlBodyParser implements BodyParser<TodoItemRequest> {
 
   private Accumulator<ByteString, F.Either<Result, TodoItemRequest>> parseXml(
       Http.RequestHeader request) {
-    return xmlParser.apply(request)
+    return xmlDelegate.apply(request)
                     .map(resultOrXml -> {
                       if (resultOrXml.left.isPresent()) {
                         return F.Either.Left(resultOrXml.left.get());
