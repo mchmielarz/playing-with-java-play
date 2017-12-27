@@ -1,18 +1,17 @@
-package pl.devthoughts.todos.controllers;
+package pl.devthoughts.todos.controllers.protobuf;
 
 import io.vavr.collection.List;
 import io.vavr.control.Option;
-
+import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthoughts.todos.domain.TodoItem;
 import pl.devthoughts.todos.domain.TodoItemId;
 import pl.devthoughts.todos.modules.protobuf.ProtobufParser;
 import pl.devthoughts.todos.service.TodoService;
 import pl.devthougths.todos.ProtobufTodoItem;
-
-import javax.inject.Inject;
-
 import play.mvc.Controller;
 import play.mvc.Result;
+
+import javax.inject.Inject;
 
 import static pl.devthoughts.todos.TimeUtils.asLocalDateTime;
 import static pl.devthoughts.todos.TimeUtils.asProtobufTimestamp;

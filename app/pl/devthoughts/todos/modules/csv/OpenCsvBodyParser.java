@@ -1,22 +1,18 @@
-package pl.devthoughts.todos.modules;
+package pl.devthoughts.todos.modules.csv;
 
 import akka.util.ByteString;
-
 import com.google.inject.Inject;
 import com.opencsv.bean.CsvToBeanBuilder;
-
 import io.vavr.control.Either;
 import io.vavr.control.Option;
-
 import pl.devthoughts.todos.controllers.TodoItemRequest;
-
-import java.io.StringReader;
-import java.util.List;
-
 import play.api.http.ParserConfiguration;
 import play.http.HttpErrorHandler;
 import play.mvc.BodyParser;
 import play.mvc.Http;
+
+import java.io.StringReader;
+import java.util.List;
 
 public class OpenCsvBodyParser extends BodyParser.BufferingBodyParser<List<TodoItemRequest>> {
 

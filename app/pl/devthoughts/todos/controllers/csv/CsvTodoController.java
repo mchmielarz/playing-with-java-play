@@ -1,19 +1,18 @@
-package pl.devthoughts.todos.controllers;
+package pl.devthoughts.todos.controllers.csv;
 
 import io.vavr.Value;
-
+import pl.devthoughts.todos.controllers.TodoItemRequest;
 import pl.devthoughts.todos.domain.TodoItemId;
-import pl.devthoughts.todos.modules.OpenCsvBodyParser;
+import pl.devthoughts.todos.modules.csv.OpenCsvBodyParser;
 import pl.devthoughts.todos.service.TodoService;
+import play.mvc.BodyParser;
+import play.mvc.Controller;
+import play.mvc.Result;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-
-import play.mvc.BodyParser;
-import play.mvc.Controller;
-import play.mvc.Result;
 
 public class CsvTodoController extends Controller {
 

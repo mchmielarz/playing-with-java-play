@@ -9,15 +9,16 @@ import org.junit.Test;
 
 import pl.devthoughts.todos.controllers.TodoItemRequest;
 
+import pl.devthoughts.todos.modules.csv.OpenCsvBodyParser;
 import play.api.http.ParserConfiguration;
 import play.mvc.Http;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static pl.devthoughts.todos.TimeUtils.fromString;
 import static pl.devthoughts.todos.assertj.TodoItemRequestAssert.assertThat;
-import static pl.devthoughts.todos.modules.OpenCsvBodyParser.NON_CSV_MIME_TYPE_ERR_MSG;
-import static pl.devthoughts.todos.modules.OpenCsvBodyParser.NO_BODY_ERR_MSG;
-import static pl.devthoughts.todos.modules.OpenCsvBodyParser.TEXT_CSV_MIME_TYPE;
+import static pl.devthoughts.todos.modules.csv.OpenCsvBodyParser.NON_CSV_MIME_TYPE_ERR_MSG;
+import static pl.devthoughts.todos.modules.csv.OpenCsvBodyParser.NO_BODY_ERR_MSG;
+import static pl.devthoughts.todos.modules.csv.OpenCsvBodyParser.TEXT_CSV_MIME_TYPE;
 
 public class OpenCsvBodyParserTest {
 
