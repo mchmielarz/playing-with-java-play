@@ -68,6 +68,20 @@ public class OpenCsvBodyParserTest {
     }
 
     @Test
+    public void should_reject_request_with_not_valid_csv_body() throws Exception {
+        ByteString bodyContent = ByteString.fromString("name,dueDate\nDo something,2017-09-16");
+
+        Http.RequestHeader request =
+            new Http.RequestBuilder()
+                .bodyRaw(bodyContent)
+                .header("Content-Type", TEXT_CSV_MIME_TYPE)
+                .build();
+
+        assertThatThrownBy(() -> bodyParser().parse(request, bodyContent))
+            .hasMessageStartingWith("Error parsing CSV line: 1");
+    }
+
+    @Test
     public void should_parse_request_with_csv_body() throws Exception {
         ByteString bodyContent = ByteString.fromString("name,dueDate\nDo something,2017-09-16T23:59:00");
 
@@ -82,7 +96,6 @@ public class OpenCsvBodyParserTest {
         assertThat(requests.get(0))
             .hasName("Do something")
             .hasDueDate(fromString("2017-09-16T23:59:00"));
-
     }
 
     @NotNull
